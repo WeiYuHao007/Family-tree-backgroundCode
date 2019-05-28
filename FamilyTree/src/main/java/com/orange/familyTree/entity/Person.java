@@ -1,12 +1,10 @@
 package com.orange.familyTree.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.Labels;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 import org.neo4j.ogm.annotation.Relationship;
@@ -17,24 +15,31 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @NodeEntity(label="Person")
 public class Person{
 	
-	//无参构造器
-	public Person() {
-	}
-	
 	//有参构造器
-	public Person(Long uuid,String name,String firstName,String birthTime,
-					String deathTime,String majorAchievements) {
+	public Person(Long uuid, String name, String firstName, String birthTime, String deathTime,
+			String majorAchievements, Genealogy belongGenealogy, Person farther,
+			HashSet<Person> sons, Set<Person> brothers) {
+		super();
 		this.uuid = uuid;
 		this.name = name;
 		this.firstName = firstName;
 		this.birthTime = birthTime;
 		this.deathTime = deathTime;
 		this.majorAchievements = majorAchievements;
+		this.belongGenealogy = belongGenealogy;
+		this.farther = farther;
+		this.sons = sons;
+		this.brothers = brothers;
 	}
 
-	//节点属性
+	//无参构造器
+	public Person() {
+	}
+
+	
 	/*官方文档提示：对于长时间运行的应用程序，请不要依赖此ID。
 	 * Neo4j将重用已删除的节点ID。建议用户为其域对象提供自己的唯一标识符（或使用UUID）。*/
+	//以下为节点属性
 	@Id @GeneratedValue
 	private Long uuid;
 
@@ -53,35 +58,29 @@ public class Person{
 	@Property(name = "majorAchievements")
 	private String majorAchievements;
 
-	@Labels
-	private List<String> labels = new ArrayList<>();
 	
-	
-	//关系
 	//节点属于的族谱
-	//大小写可能存在问题
-	//@JsonIgnoreProperties("Person")
+	@JsonIgnoreProperties("person")
 	@Relationship(type = "BELONG", direction = Relationship.OUTGOING)
 	private Genealogy belongGenealogy;
 	
-	//拥有该节点的族谱
-	@Relationship(type = "OWNS", direction = Relationship.INCOMING)
-	private Genealogy ownsGenealogy;
-	
 	//该节点的父亲
+	@JsonIgnoreProperties("person")
 	@Relationship(type = "IS_FARTHER", direction = Relationship.INCOMING)
 	private Person farther;
 	
 	//该节点的儿子
-	@Relationship(type = "IS_SON", direction = Relationship.OUTGOING)
-	private Set<Person> sons;
+	@JsonIgnoreProperties("person")
+	@Relationship(type = "IS_SON", direction = Relationship.INCOMING)
+	private HashSet<Person> sons;
 	
 	//该节点的兄弟
-	@Relationship(type = "IS_BROTHER", direction = Relationship.UNDIRECTED)
+	@JsonIgnoreProperties("person")
+	@Relationship(type = "IS_BROTHER", direction = Relationship.OUTGOING)
 	private Set<Person> brothers;
 	
 	
-	//以下为一系列get|set操作。
+	//以下为一系列get、set操作。
 	public Long getUuid() {
 		return uuid;
 	}
@@ -129,14 +128,6 @@ public class Person{
 		return this.majorAchievements;
 	}
 	
-	public void setLabels(String label){
-		this.labels.add(label);
-	}
-	
-	public List<String> getLabels(){
-		return this.labels;
-	}
-	
 	public void setGenealogy(Genealogy belongGenealogy){
 		this.belongGenealogy = belongGenealogy;
 	}
@@ -149,14 +140,6 @@ public class Person{
 		this.belongGenealogy = belongGenealogy;
 	}
 
-	public Genealogy getOwnsGenealogy() {
-		return ownsGenealogy;
-	}
-
-	public void setOwnsGenealogy(Genealogy ownsGenealogy) {
-		this.ownsGenealogy = ownsGenealogy;
-	}
-
 	public Person getFarther() {
 		return farther;
 	}
@@ -165,11 +148,11 @@ public class Person{
 		this.farther = farther;
 	}
 
-	public Set<Person> getSons() {
+	public HashSet<Person> getSons() {
 		return sons;
 	}
 
-	public void setSons(Set<Person> sons) {
+	public void setSons(HashSet<Person> sons) {
 		this.sons = sons;
 	}
 
@@ -181,7 +164,4 @@ public class Person{
 		this.brothers = brothers;
 	}
 
-	public void setLabels(List<String> labels) {
-		this.labels = labels;
-	}
 }
