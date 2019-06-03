@@ -16,20 +16,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Person{
 	
 	//有参构造器
-	public Person(Long uuid, String name, String firstName, String birthTime, String deathTime,
-			String majorAchievements, Genealogy belongGenealogy, Person farther,
-			HashSet<Person> sons, Set<Person> brothers) {
+	public Person(String name, String firstName, String birthTime, String deathTime,
+			String majorAchievements) {
 		super();
-		this.uuid = uuid;
 		this.name = name;
 		this.firstName = firstName;
 		this.birthTime = birthTime;
 		this.deathTime = deathTime;
 		this.majorAchievements = majorAchievements;
-		this.belongGenealogy = belongGenealogy;
-		this.farther = farther;
-		this.sons = sons;
-		this.brothers = brothers;
 	}
 
 	//无参构造器
@@ -37,8 +31,6 @@ public class Person{
 	}
 
 	
-	/*官方文档提示：对于长时间运行的应用程序，请不要依赖此ID。
-	 * Neo4j将重用已删除的节点ID。建议用户为其域对象提供自己的唯一标识符（或使用UUID）。*/
 	//以下为节点属性
 	@Id @GeneratedValue
 	private Long uuid;
@@ -60,7 +52,7 @@ public class Person{
 
 	
 	//节点属于的族谱
-	@JsonIgnoreProperties("person")
+	@JsonIgnoreProperties("genealogy")
 	@Relationship(type = "BELONG", direction = Relationship.OUTGOING)
 	private Genealogy belongGenealogy;
 	
@@ -84,7 +76,7 @@ public class Person{
 	public Long getUuid() {
 		return uuid;
 	}
-
+	
 	public void setUuid(Long uuid) {
 		this.uuid = uuid;
 	}
@@ -108,6 +100,7 @@ public class Person{
 	public void setBirthTime(String birthTime) {
 		this.birthTime = birthTime;
 	}
+	
 	public String getBirthTime() {
 		return this.birthTime;
 	}
@@ -131,31 +124,31 @@ public class Person{
 	public void setGenealogy(Genealogy belongGenealogy){
 		this.belongGenealogy = belongGenealogy;
 	}
-
+	
 	public Genealogy getBelongGenealogy() {
 		return belongGenealogy;
 	}
-
+	
 	public void setBelongGenealogy(Genealogy belongGenealogy) {
 		this.belongGenealogy = belongGenealogy;
 	}
-
+	
 	public Person getFarther() {
 		return farther;
 	}
-
+	
 	public void setFarther(Person farther) {
 		this.farther = farther;
 	}
-
+	
 	public HashSet<Person> getSons() {
 		return sons;
 	}
-
+	
 	public void setSons(HashSet<Person> sons) {
 		this.sons = sons;
 	}
-
+	
 	public Set<Person> getBrothers() {
 		return brothers;
 	}

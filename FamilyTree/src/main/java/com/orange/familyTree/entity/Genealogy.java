@@ -1,6 +1,7 @@
 package com.orange.familyTree.entity;
 
 import java.util.List;
+import java.util.Set;
 
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -14,14 +15,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Genealogy {
 	
 	//有参构造器
-	public Genealogy(Long uuid, String name, List<String> admin, List<String> topAdmin,
-			List<Person> ownsNode) {
+	public Genealogy(String name, String genealogySuperAdmin) {
 		super();
-		this.uuid = uuid;
 		this.name = name;
-		this.admin = admin;
-		this.topAdmin = topAdmin;
-		this.ownsNode = ownsNode;
+		this.genealogySuperAdmin = genealogySuperAdmin;
 	}
 
 	//无参构造器
@@ -37,55 +34,69 @@ public class Genealogy {
 	@Property(name = "name")
 	private String name;
 	
-	@Property(name = "admin")
-	private List<String>  admin;
+	@Property(name = "genealogySuperAdmin")
+	private String genealogySuperAdmin;
 	
-	@Property(name = "topAdmin")
-	private List<String> topAdmin;
+	@Property(name = "genealogyAdmin")
+	private Set<String> genealogyAdmin;
+	
+	@Property(name = "followers")
+	private Set<String> followers;
 
 
+	//该图谱拥有的全部节点
 	@JsonIgnoreProperties("person")
 	@Relationship(type = "OWNS", direction = Relationship.OUTGOING)
 	private List<Person> ownsNode;
+	
 	
 	//一系列getter,setter.
 	public Long getUuid() {
 		return uuid;
 	}
-
+	
 	public void setUuid(Long uuid) {
 		this.uuid = uuid;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
-
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public List<String> getAdmin() {
-		return admin;
-	}
-
-	public void setAdmin(List<String> admin) {
-		this.admin = admin;
-	}
-
-	public List<String> getTopAdmin() {
-		return topAdmin;
-	}
-
-	public void setTopAdmin(List<String> topAdmin) {
-		this.topAdmin = topAdmin;
-	}
-
+	
 	public List<Person> getOwnsNode() {
 		return ownsNode;
 	}
-
+	
 	public void setOwnsNode(List<Person> ownsNode) {
 		this.ownsNode = ownsNode;
 	}
+
+	public String getGenealogySuperAdmin() {
+		return genealogySuperAdmin;
+	}
+
+	public void setGenealogySuperAdmin(String genealogySuperAdmin) {
+		this.genealogySuperAdmin = genealogySuperAdmin;
+	}
+
+	public Set<String> getGenealogyAdmin() {
+		return genealogyAdmin;
+	}
+
+	public void setGenealogyAdmin(Set<String> genealogyAdmin) {
+		this.genealogyAdmin = genealogyAdmin;
+	}
+
+	public Set<String> getFollowers() {
+		return followers;
+	}
+
+	public void setFollowers(Set<String> followers) {
+		this.followers = followers;
+	}
+	
 }

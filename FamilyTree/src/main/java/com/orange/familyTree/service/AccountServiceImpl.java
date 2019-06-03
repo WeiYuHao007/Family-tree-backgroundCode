@@ -4,6 +4,6 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class GenealogyServiceImpl implements GenealogyService {
+public class AccountServiceImpl implements AccountService {
 
 }
