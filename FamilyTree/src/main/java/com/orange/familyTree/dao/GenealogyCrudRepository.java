@@ -1,4 +1,4 @@
-package com.orange.familyTree.repository;
+package com.orange.familyTree.dao;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.stereotype.Repository;

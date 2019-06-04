@@ -16,11 +16,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Person{
 	
 	//有参构造器
-	public Person(String name, String firstName, String birthTime, String deathTime,
+	public Person(String name, String birthTime, String deathTime,
 			String majorAchievements) {
 		super();
 		this.name = name;
-		this.firstName = firstName;
 		this.birthTime = birthTime;
 		this.deathTime = deathTime;
 		this.majorAchievements = majorAchievements;
@@ -55,17 +54,17 @@ public class Person{
 	@JsonIgnoreProperties("genealogy")
 	@Relationship(type = "BELONG", direction = Relationship.OUTGOING)
 	private Genealogy belongGenealogy;
-	
+	/*
 	//该节点的父亲
-	@JsonIgnoreProperties("person")
+	@JsonIgnoreProperties("Person")
 	@Relationship(type = "IS_FARTHER", direction = Relationship.INCOMING)
 	private Person farther;
 	
 	//该节点的儿子
-	@JsonIgnoreProperties("person")
+	@JsonIgnoreProperties("Person")
 	@Relationship(type = "IS_SON", direction = Relationship.INCOMING)
 	private HashSet<Person> sons;
-	
+	*/
 	//该节点的兄弟
 	@JsonIgnoreProperties("person")
 	@Relationship(type = "IS_BROTHER", direction = Relationship.OUTGOING)
@@ -132,7 +131,7 @@ public class Person{
 	public void setBelongGenealogy(Genealogy belongGenealogy) {
 		this.belongGenealogy = belongGenealogy;
 	}
-	
+	/*
 	public Person getFarther() {
 		return farther;
 	}
@@ -148,7 +147,7 @@ public class Person{
 	public void setSons(HashSet<Person> sons) {
 		this.sons = sons;
 	}
-	
+	*/
 	public Set<Person> getBrothers() {
 		return brothers;
 	}

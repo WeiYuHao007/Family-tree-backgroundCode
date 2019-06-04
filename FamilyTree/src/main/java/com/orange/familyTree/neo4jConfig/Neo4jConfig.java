@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration("neo4jConfig")
 // 定义neo4j接口扫描包路径
-@EnableNeo4jRepositories(basePackages = "com.orange.familyTree.repository")
+@EnableNeo4jRepositories(basePackages = "com.orange.familyTree.dao")
 // 定义实体bean扫描包路径
 @EntityScan(basePackages="com.orange.familyTree.entity")
 @EnableTransactionManagement
