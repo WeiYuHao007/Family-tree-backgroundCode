@@ -24,62 +24,17 @@ public class PersonServiceImple implements PersonService{
 		Person myPerson = personCrudRepository.findByName(name);
 		return myPerson;
 	}
-	
+
 	@Override
-	public List<Person> getPersonRelationshipPath(String startName, String endName) {
-		/*获得两个人之间指定关系的路径：
-		 * 1.从数据库获得两人的信息。
-		 * 2.创建关系。
-		 * */
-		Person myStartPerson = personCrudRepository.findByName(startName);
-		Person myEndPerson = personCrudRepository.findByName(endName);
-		List<Person> relationshipPath = personCrudRepository.findPersonRelationshipPath(
-				myStartPerson.getName(), myEndPerson.getName()
-				);
-		/*（猜测和路径上的个数有关，待解决）
-		List<Person> myRelationshipPath = new ArrayList<Person>(relationshipPath.size());
-		//对列表数据进行整理
-		int size = relationshipPath.size();
-		int temIndex = relationshipPath.size()/2;
-		Person temPerson;
-		if(size % 2 != 0 ) {
-			//大小是奇数的情况
-			for(int i = 0; i < size; i++) {
-				//偶数是减
-				if(i % 2 != 0) {
-					//i是奇数
-					temIndex += i;
-					temPerson = relationshipPath.get(temIndex);
-				}
-				else {
-					//i是偶数
-					temIndex -= i;
-					temPerson = relationshipPath.get(temIndex);
-				}
-				myRelationshipPath.add(temPerson);
-			}
+	public List<Person> gerPeToPeShortPath(String startPerson, String endPerson) {
+		int pathLength = personCrudRepository.getShortPathLength(startPerson, endPerson);
+		List<Person> myListPerson = new ArrayList<Person>();
+		for(int i = 0; i <= pathLength; i++) {
+			myListPerson.add(personCrudRepository.findShortPath(startPerson, endPerson, i));
 		}
-		else {
-			//大小是偶数的情况
-			temIndex -= 1;
-			for(int i = 0; i < size; i++) {
-				//偶数是减
-				if(i % 2 != 0) {
-					//i是奇数
-					temIndex += i;
-					temPerson = relationshipPath.get(temIndex);
-				}
-				else {
-					//i是偶数
-					temIndex -= i;
-					temPerson = relationshipPath.get(temIndex);
-				}
-				myRelationshipPath.add(temPerson);
-			}
-			
-		}*/
-		return relationshipPath;
+		return myListPerson;
 	}
+
 
 
 	//Delete
@@ -107,24 +62,26 @@ public class PersonServiceImple implements PersonService{
 	
 	//Post
 	@Override
-	public void postPerson(Person person) {
+	public void createPerson(Person person) {
 		/* 创建节点：
 		 * */
 	}
 	
 	@Override
-	public void postPersonRelationship(Person startPerson, String relationship, Person endPerson) {
+	public void createPersonRelationship(String startPerson, String relationship, String endPerson) {
 		/*创建关系:
 		 * 1.找起始人。
 		 * 2.找断终人。
 		 * 3.创建关系。*/
+		Person myStartPerson = personCrudRepository.findByName(startPerson);
+		Person myEndPerson = personCrudRepository.findByName(endPerson);
 		
 	}
 
 
 	//Put
 	@Override
-	public Person putPerson(Person modifiedPerson) {
+	public Person modifyPerson(Person modifiedPerson) {
 		/*修改节点属性：
 		 * 1.找到被修改的人。
 		 * 2.进行修改
@@ -132,5 +89,4 @@ public class PersonServiceImple implements PersonService{
 		 * */
 		return null;
 	}
-
 }

@@ -1,7 +1,6 @@
 package com.orange.familyTree.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -49,27 +48,22 @@ public class Person{
 	@Property(name = "majorAchievements")
 	private String majorAchievements;
 
-	
-	//节点属于的族谱
-	@JsonIgnoreProperties("genealogy")
-	@Relationship(type = "BELONG", direction = Relationship.OUTGOING)
-	private Genealogy belongGenealogy;
-	/*
+
 	//该节点的父亲
-	@JsonIgnoreProperties("Person")
+	@JsonIgnoreProperties
 	@Relationship(type = "IS_FARTHER", direction = Relationship.INCOMING)
 	private Person farther;
 	
 	//该节点的儿子
-	@JsonIgnoreProperties("Person")
+	@JsonIgnoreProperties
 	@Relationship(type = "IS_SON", direction = Relationship.INCOMING)
-	private HashSet<Person> sons;
-	*/
+	private List<Person> sons;
+
 	//该节点的兄弟
-	@JsonIgnoreProperties("person")
+	@JsonIgnoreProperties
 	@Relationship(type = "IS_BROTHER", direction = Relationship.OUTGOING)
-	private Set<Person> brothers;
-	
+	private List<Person> brothers;
+
 	
 	//以下为一系列get、set操作。
 	public Long getUuid() {
@@ -119,19 +113,7 @@ public class Person{
 	public String getMajorAchievements() {
 		return this.majorAchievements;
 	}
-	
-	public void setGenealogy(Genealogy belongGenealogy){
-		this.belongGenealogy = belongGenealogy;
-	}
-	
-	public Genealogy getBelongGenealogy() {
-		return belongGenealogy;
-	}
-	
-	public void setBelongGenealogy(Genealogy belongGenealogy) {
-		this.belongGenealogy = belongGenealogy;
-	}
-	/*
+
 	public Person getFarther() {
 		return farther;
 	}
@@ -140,19 +122,19 @@ public class Person{
 		this.farther = farther;
 	}
 	
-	public HashSet<Person> getSons() {
+	public List<Person> getSons() {
 		return sons;
 	}
 	
-	public void setSons(HashSet<Person> sons) {
+	public void setSons(List<Person> sons) {
 		this.sons = sons;
 	}
-	*/
-	public Set<Person> getBrothers() {
+
+	public List<Person> getBrothers() {
 		return brothers;
 	}
 
-	public void setBrothers(Set<Person> brothers) {
+	public void setBrothers(List<Person> brothers) {
 		this.brothers = brothers;
 	}
 

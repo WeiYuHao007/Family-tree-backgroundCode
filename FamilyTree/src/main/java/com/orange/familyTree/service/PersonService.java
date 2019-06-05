@@ -10,22 +10,24 @@ public interface PersonService {
 	//通过姓名获得节点
 	Person getPerson(String name);
 	
-	//通过姓名查询两个指定人之间的关系路径
-	List<Person> getPersonRelationshipPath(String startName, String endName);
+	//查询两者间的关系
+	List<Person> gerPeToPeShortPath(String startPerson,String endPerson);
 
 	
 	//Put
 	//修改节点属性
-	Person putPerson(Person modifiedPerson);
+	Person modifyPerson(Person modifiedPerson);
+	
+	//修改人物间的关系
 	
 	
 	//Post
 	//创建节点
-	void postPerson(Person person);
+	void createPerson(Person person);
 	
 	//创建节点关系
-	void postPersonRelationship(Person startPerson, String relationship, 
-			Person endPerson);
+	void createPersonRelationship(String startPerson, String relationship, 
+			String endPerson);
 	
 	
 	//Delete

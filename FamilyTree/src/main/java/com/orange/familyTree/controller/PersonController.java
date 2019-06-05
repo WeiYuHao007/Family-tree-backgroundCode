@@ -24,10 +24,10 @@ public class PersonController {
 		return personService.getPerson(name);
 	}
 	
-	@GetMapping(value="/{nickName}/{genealogyName}/{startPersonName}/{endPersonName}")
-	public List<Person> getPersonRelationshipPath(@PathVariable("startPersonName") String startPersonName,
-			@PathVariable("endPersonName") String endPersonName){
-		return personService.getPersonRelationshipPath(startPersonName, endPersonName);
+	@GetMapping(value="/{nickName}/{genealogyName}/{startPerson}/{endPerson}")
+	public List<Person> getPersonRelationshipPath(@PathVariable("startPerson") String startPerson,
+			@PathVariable("endPerson") String endPerson){
+		return personService.gerPeToPeShortPath(startPerson, endPerson);
 		
 	}
 
