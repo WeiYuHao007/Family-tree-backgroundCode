@@ -1,6 +1,5 @@
 package com.orange.familyTree.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,74 +18,47 @@ public class PersonServiceImple implements PersonService{
 	
 	//Get
 	@Override
-	public Person getPerson(String name) {
-		/*通过名字获取节点：*/
-		Person myPerson = personCrudRepository.findByName(name);
+	//获取单个节点信息
+	public Person getPerson(String nickName, String genealogyName, String personName) {
+		Person myPerson = personCrudRepository.findByName(nickName, genealogyName, personName);
 		return myPerson;
 	}
 
 	@Override
-	public List<Person> gerPeToPeShortPath(String startPerson, String endPerson) {
-		int pathLength = personCrudRepository.getShortPathLength(startPerson, endPerson);
-		List<Person> myListPerson = new ArrayList<Person>();
-		for(int i = 0; i <= pathLength; i++) {
-			myListPerson.add(personCrudRepository.findShortPath(startPerson, endPerson, i));
-		}
-		return myListPerson;
+	//获取两个指定节点间的最短路径
+	public List<Person> findShortPath(String nickName, String genealogyName, String startPersonName, 
+			String endPersonName) {
+		return personCrudRepository.findShortPath(nickName, genealogyName, startPersonName,
+				endPersonName);
 	}
-
 
 
 	//Delete
 	@Override
-	public void deletePerson(Person person) {
-		/*删除节点：
-		 * 1.找人。
-		 * 2.没有的话报错。
-		 * 3.有的话删除*/
-		Person MyPerson = personCrudRepository.findByName(person.getName());
-		personCrudRepository.deleteByName(MyPerson.getName());
+	public void deletePerson() {
+
 	}
 
 	@Override
-	public void deletePersonRelationship(Person startPerson, String relationship, Person endPerson) {
-		/*删除关系：
-		 * 1.找起始人。
-		 * 2.找断终人。
-		 * 3.找关系。
-		 * 4.删除关系*/
-		Person MyStartPerson = personCrudRepository.findByName(startPerson.getName());
+	public void deletePersonRelationship() {
 		
 	}
 	
 	
 	//Post
 	@Override
-	public void createPerson(Person person) {
-		/* 创建节点：
-		 * */
+	public void createPerson() {
 	}
 	
 	@Override
-	public void createPersonRelationship(String startPerson, String relationship, String endPerson) {
-		/*创建关系:
-		 * 1.找起始人。
-		 * 2.找断终人。
-		 * 3.创建关系。*/
-		Person myStartPerson = personCrudRepository.findByName(startPerson);
-		Person myEndPerson = personCrudRepository.findByName(endPerson);
-		
+	public void createPersonRelationship() {
 	}
 
 
 	//Put
 	@Override
-	public Person modifyPerson(Person modifiedPerson) {
-		/*修改节点属性：
-		 * 1.找到被修改的人。
-		 * 2.进行修改
-		 * 4.返回被修改后的人
-		 * */
+	public Person modifyPersonProperties() {
 		return null;
 	}
+
 }

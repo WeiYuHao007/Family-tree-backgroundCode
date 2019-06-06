@@ -1,14 +1,9 @@
 package com.orange.familyTree.entity;
 
-import java.util.List;
-
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
-import org.neo4j.ogm.annotation.Relationship;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @NodeEntity(label="Person")
@@ -47,22 +42,6 @@ public class Person{
 	
 	@Property(name = "majorAchievements")
 	private String majorAchievements;
-
-
-	//该节点的父亲
-	@JsonIgnoreProperties
-	@Relationship(type = "IS_FARTHER", direction = Relationship.INCOMING)
-	private Person farther;
-	
-	//该节点的儿子
-	@JsonIgnoreProperties
-	@Relationship(type = "IS_SON", direction = Relationship.INCOMING)
-	private List<Person> sons;
-
-	//该节点的兄弟
-	@JsonIgnoreProperties
-	@Relationship(type = "IS_BROTHER", direction = Relationship.OUTGOING)
-	private List<Person> brothers;
 
 	
 	//以下为一系列get、set操作。
@@ -113,29 +92,4 @@ public class Person{
 	public String getMajorAchievements() {
 		return this.majorAchievements;
 	}
-
-	public Person getFarther() {
-		return farther;
-	}
-	
-	public void setFarther(Person farther) {
-		this.farther = farther;
-	}
-	
-	public List<Person> getSons() {
-		return sons;
-	}
-	
-	public void setSons(List<Person> sons) {
-		this.sons = sons;
-	}
-
-	public List<Person> getBrothers() {
-		return brothers;
-	}
-
-	public void setBrothers(List<Person> brothers) {
-		this.brothers = brothers;
-	}
-
 }

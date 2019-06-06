@@ -14,38 +14,42 @@ public interface PersonCrudRepository extends Neo4jRepository<Person, Long>{
 	
 	//Get
 	//根据节点名查询，返回被查询人的所有信息
-	Person findByName(String name);
+	@Query("MATCH(a1:Account)-[:FOCUS_ON]->(g:Genealogy)-[:OWNS]->(p:Person{name:{personName}})\n" + 
+			"WHERE a1.nickName={nickName} AND g.name={genealogyName}\n" + 
+			"RETURN p")
+	Person findByName(@Param("nickName") String nickName, @Param("genealogyName") String genealogyName,
+			@Param("personName") String personName);
 	
 	//判断是否节点存在
 	
-	//查询两个节点间的最短路中节点的总数
-	@Query("MATCH(p1:Person{name:{startPerson}}),(p2:Person{name:{endPerson}}),"
-			+ "p=shortestpath((p1)-[:IS_SON|:IS_BROTHER|:IS_FARTHER*]-(p2))"
-			+ "RETURN length(p)")
-	int getShortPathLength(@Param("startPerson") String startPerson, 
-			@Param("endPerson") String endPerson);
-	
-	//查询两节点间的最短路径中指定位置的人
-	@Query("MATCH(p1:Person{name:{startPerson}}),(p2:Person{name:{endPerson}}),"
-			+ "p=shortestpath((p1)-[:IS_SON|:IS_BROTHER|:IS_FARTHER*]-(p2)) "
-			+ "RETURN nodes(p)[{index}]")
-	Person findShortPath(@Param("startPerson") String startPerson,
-			@Param("endPerson") String endPerson, @Param("index") int index);
+	//查询两节点之间的最短路径
+	@Query("MATCH(a:Account)-[:FOCUS_ON]->(g:Genealogy)-[:OWNS]->(p1:Person{name:{startPerson}}), " + 
+			"(g)-[:OWNS]->(p2:Person{name:{endPerson}}), " + 
+			"p = shortestpath((p1)-[:IS_SON|:IS_BROTHER|:IS_FARTHER*]-(p2)) " + 
+			"WHERE a.nickName={nickName} AND g.name={genealogyName} " + 
+			"UNWIND(nodes(p)) AS persons " + 
+			"RETURN persons")
+	List<Person> findShortPath(@Param("nickName") String nickName, @Param("genealogyName") String genealogyName,
+			@Param("startPerson") String startPerson, @Param("endPerson") String endPerson);
 	
 	
 	//Delete
 	//根据节点名删除节点
-	@Query("MATCH(p1:Person{name:{name}})-[r]-(s)"
-			+ "DELETE p1,r")
-	void deleteByName(String name);
 	
 	
 	//Post
-	@Query("MATCH(p1:Person{name:{startName}}),(p2:Person{name:{endName}})"
-			+ "CREATE (p1)-[:{relationshipName}]->(p2)")
-	void createRelationship(@Param("startName") String startName, 
-			@Param("relationshipName") String relationshipName,
-			@Param("endName") String endName);
+
+	
+	//修改节点名
+	
+	//修改节点出生日期
+	
+	//修改节点死亡日期
+	
+	//修改节点主要成就
+	
+	//修改人物间的关系
+	
 	
 	
 	//Put

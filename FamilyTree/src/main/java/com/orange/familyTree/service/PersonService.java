@@ -8,34 +8,30 @@ public interface PersonService {
 	
 	//Get
 	//通过姓名获得节点
-	Person getPerson(String name);
+	Person getPerson(String nickName, String genealogyName, String personName);
 	
-	//查询两者间的关系
-	List<Person> gerPeToPeShortPath(String startPerson,String endPerson);
+	//查询两个指定节点间的最短路径
+	List<Person> findShortPath(String nickName, String genealogyName, String startPersonName, 
+			String endPersonName);
 
 	
 	//Put
 	//修改节点属性
-	Person modifyPerson(Person modifiedPerson);
-	
-	//修改人物间的关系
-	
+	Person modifyPersonProperties();
 	
 	//Post
 	//创建节点
-	void createPerson(Person person);
+	void createPerson();
 	
 	//创建节点关系
-	void createPersonRelationship(String startPerson, String relationship, 
-			String endPerson);
+	void createPersonRelationship();
 	
 	
 	//Delete
 	//删除节点关系
-	void deletePersonRelationship(Person startPerson, String relationship,
-			Person endPerson);
+	void deletePersonRelationship();
 	
 	//删除节点
-	void deletePerson(Person person);
+	void deletePerson();
 
 }
