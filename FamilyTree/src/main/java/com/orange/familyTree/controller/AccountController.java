@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.orange.familyTree.dao.AccountCrudRepository;
 import com.orange.familyTree.entity.Account;
+import com.orange.familyTree.repository.AccountCrudRepository;
 
 @RestController
 public class AccountController {

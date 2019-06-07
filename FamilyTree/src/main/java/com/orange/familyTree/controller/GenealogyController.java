@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.orange.familyTree.dao.GenealogyCrudRepository;
 import com.orange.familyTree.entity.Genealogy;
+import com.orange.familyTree.repository.GenealogyCrudRepository;
 
 @RestController
 public class GenealogyController {

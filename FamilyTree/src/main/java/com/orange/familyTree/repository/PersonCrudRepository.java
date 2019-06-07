@@ -1,4 +1,4 @@
-package com.orange.familyTree.dao;
+package com.orange.familyTree.repository;
 
 import java.util.List;
 
