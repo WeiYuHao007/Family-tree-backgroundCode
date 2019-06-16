@@ -11,6 +11,7 @@ import com.orange.familyTree.repository.PersonCrudRepository;
 
 
 @Service
+@Transactional
 public class PersonServiceImple implements PersonService{
 	
 	@Autowired
@@ -19,7 +20,6 @@ public class PersonServiceImple implements PersonService{
 	
 	//Get
 	@Override
-	@Transactional
 	//获取单个节点信息
 	public Person getPerson(String nickName, String genealogyName, String personName) {
 		Person myPerson = personCrudRepository.findByName(nickName, genealogyName, personName);
@@ -27,7 +27,6 @@ public class PersonServiceImple implements PersonService{
 	}
 
 	@Override
-	@Transactional
 	//获取两个指定节点间的最短路径
 	public List<Person> findShortPath(String nickName, String genealogyName, String startPersonName, 
 			String endPersonName) {

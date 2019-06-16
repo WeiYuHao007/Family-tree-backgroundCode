@@ -1,24 +1,36 @@
 package com.orange.familyTree.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.orange.familyTree.entity.Account;
-import com.orange.familyTree.repository.AccountCrudRepository;
+import com.orange.familyTree.pojo.AccountDetail;
+import com.orange.familyTree.service.AccountService;
 
+@CrossOrigin(origins = {"http://localhost:8080","null"})
 @RestController
 public class AccountController {
 	
 	@Autowired
-	private AccountCrudRepository accountCrudRepository;
+	private AccountService accountService;
 	
-	@GetMapping(value="/{nickName}")
+	@PostMapping(value="/account")
 	@ResponseBody
-	public Account findAccountByName(@PathVariable("nickName") String nickName) {
-		return accountCrudRepository.findByNickName(nickName);
+	public AccountDetail logIn(@RequestBody AccountDetail accountDetail) {
+		//简单处理，后续丰富逻辑
+		Account account = accountService.findAccount(accountDetail.getTelephoneNumber(), 
+				accountDetail.getPassword());
+		AccountDetail myaccountDetail = AccountDetail.changeToAccountDetail(account);
+		if(myaccountDetail != null) {
+			return myaccountDetail;
+		}
+		else {
+			return null;
+		}
 	}
 
 }

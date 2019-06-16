@@ -1,8 +1,11 @@
 package com.orange.familyTree.service;
 
+import com.orange.familyTree.entity.Account;
+
 public interface AccountService {
 	
-	//验证登入账号
+	//获取账号
+	Account findAccount(String telephoneNumber, String password);
 	
 	//注册账号
 	

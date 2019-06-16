@@ -4,6 +4,8 @@ public interface GenealogyService {
 	
 	//显示族谱内全部节点
 	
+	//转让超级管理员
+	
 	//增加普通管理员
 	
 	//删除普通管理员

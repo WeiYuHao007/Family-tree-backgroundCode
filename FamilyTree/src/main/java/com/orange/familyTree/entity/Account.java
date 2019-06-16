@@ -1,5 +1,6 @@
 package com.orange.familyTree.entity;
 
+import java.util.List;
 import java.util.Set;
 
 import org.neo4j.ogm.annotation.GeneratedValue;
@@ -8,16 +9,19 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 import org.neo4j.ogm.annotation.Relationship;
 
+import com.orange.familyTree.pojo.AccountDetail;
+
 
 @NodeEntity(label="Account")
 public class Account {
 	
 	//有参构造器
-	public Account(String email, String password, String telephoneNumber) {
+	public Account(String nickName, String email, String password, String telephoneNumber) {
 		super();
+		this.nickName = nickName;
 		this.email = email;
-		this.password = password;
 		this.telephoneNumber = telephoneNumber;
+		this.password = password;
 	}
 	
 	//无参构造器
@@ -43,13 +47,14 @@ public class Account {
 	private String telephoneNumber;
 	
 	@Property(name="privilegeRole")
-	private String privilegeRole;
+	private List<String> privilegeRole;
 	
 	@Property(name="registrationTime")
 	private String registrationTime;
 	
 	
 	//该账号关注的图谱
+	//映射的使用有待后续考虑
 	@Relationship(type="FOCUS_ON", direction= Relationship.OUTGOING)
 	private Set<Genealogy> focusOn;
 	
@@ -87,11 +92,11 @@ public class Account {
 		this.telephoneNumber = telephoneNumber;
 	}
 	
-	public String getPrivilegeRole() {
+	public List<String> getPrivilegeRole() {
 		return privilegeRole;
 	}
 	
-	public void setPrivilegeRole(String privilegeRole) {
+	public void setPrivilegeRole(List<String> privilegeRole) {
 		this.privilegeRole = privilegeRole;
 	}
 	

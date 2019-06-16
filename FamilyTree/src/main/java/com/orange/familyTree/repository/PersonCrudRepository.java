@@ -23,6 +23,7 @@ public interface PersonCrudRepository extends Neo4jRepository<Person, Long>{
 	//判断是否节点存在
 	
 	//查询两节点之间的最短路径
+	//性能有待后续优化
 	@Query("MATCH(a:Account)-[:FOCUS_ON]->(g:Genealogy)-[:OWNS]->(p1:Person{name:{startPerson}}), " + 
 			"(g)-[:OWNS]->(p2:Person{name:{endPerson}}), " + 
 			"p = shortestpath((p1)-[:IS_SON|:IS_BROTHER|:IS_FARTHER*]-(p2)) " + 
