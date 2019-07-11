@@ -1,20 +1,35 @@
 package com.orange.familyTree.service;
 
+import java.util.List;
+
+import com.orange.familyTree.entity.Account;
+import com.orange.familyTree.entity.Genealogy;
+import com.orange.familyTree.exceptions.CypherException;
+
 public interface GenealogyService {
 	
-	//显示族谱内全部节点
+	//查询指定的图谱
+	List<Genealogy> findGenealogies() throws CypherException;
 	
-	//转让超级管理员
+	//查询指定图谱的超级管理员
+	List<Account> findSuperAdmin() throws CypherException;
 	
-	//增加普通管理员
+	//查询指定图谱的管理员
+	List<Account> findAdmin() throws CypherException;
 	
-	//删除普通管理员
+	//创建图谱
 	
-	//增加关注者
 	
-	//删除关注者
+	//修改图谱名称
+	void changeGenealogyName(String oldGenealogyName, String newGenealogy) throws CypherException;
 	
-	//修改族谱名称
-
-
+	//更改超级管理员
+	void changeSuperAdmin(String oldSuperAdmin, String newSuperAdmin) throws CypherException;
+	
+	//增加管理员
+	void addAdmin(String Genealogy, String accountName) throws CypherException;
+	
+	//撤销管理员
+	void cancelAdmin(String genealogy, String accountName) throws CypherException;
+	
 }

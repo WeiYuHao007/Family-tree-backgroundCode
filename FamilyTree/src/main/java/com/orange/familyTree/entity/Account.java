@@ -9,26 +9,9 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 import org.neo4j.ogm.annotation.Relationship;
 
-import com.orange.familyTree.pojo.AccountDetail;
-
 
 @NodeEntity(label="Account")
 public class Account {
-	
-	//有参构造器
-	public Account(String nickName, String email, String password, String telephoneNumber) {
-		super();
-		this.nickName = nickName;
-		this.email = email;
-		this.telephoneNumber = telephoneNumber;
-		this.password = password;
-	}
-	
-	//无参构造器
-	public Account() {
-		
-	}
-	
 	
 	//属性
 	@Id @GeneratedValue
@@ -57,6 +40,20 @@ public class Account {
 	//映射的使用有待后续考虑
 	@Relationship(type="FOCUS_ON", direction= Relationship.OUTGOING)
 	private Set<Genealogy> focusOn;
+	
+	
+	//构造器
+	public Account() {
+		
+	}
+	
+	public Account(String nickName, String email, String password, String telephoneNumber) {
+		super();
+		this.nickName = nickName;
+		this.email = email;
+		this.telephoneNumber = telephoneNumber;
+		this.password = password;
+	}
 	
 	
 	//一系列getter、setter

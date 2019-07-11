@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.orange.familyTree.entity.Person;
+import com.orange.familyTree.pojo.GenealogyDetail;
 import com.orange.familyTree.repository.PersonCrudRepository;
 
 
@@ -17,50 +18,47 @@ public class PersonServiceImple implements PersonService{
 	@Autowired
 	private PersonCrudRepository personCrudRepository;
 
-	
-	//Get
+
 	@Override
-	//获取单个节点信息
-	public Person getPerson(String nickName, String genealogyName, String personName) {
-		Person myPerson = personCrudRepository.findByName(nickName, genealogyName, personName);
-		return myPerson;
+	public Person getPerson(String genealogyName, String personName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	//获取两个指定节点间的最短路径
-	public List<Person> findShortPath(String nickName, String genealogyName, String startPersonName, 
-			String endPersonName) {
-		return personCrudRepository.findShortPath(nickName, genealogyName, startPersonName,
-				endPersonName);
-	}
-
-
-	//Delete
-	@Override
-	public void deletePerson() {
-
+	public List<Person> findShortPath(String genealogyName, String startPersonName, String endPersonName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public void deletePersonRelationship() {
+	public void modifyPersonProperties(GenealogyDetail newGenealogyDetail) {
+		// TODO Auto-generated method stub
 		
 	}
-	
-	
-	//Post
+
 	@Override
-	public void createPerson() {
-	}
-	
-	@Override
-	public void createPersonRelationship() {
+	public void createPerson(GenealogyDetail genealogyDetail) {
+		// TODO Auto-generated method stub
+		
 	}
 
-
-	//Put
 	@Override
-	public Person modifyPersonProperties() {
-		return null;
+	public void createPersonRelationship(String startPersonName, String endPersonName, String relationshipName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deletePersonRelationship(String startPersonName, String endPersonName, String relationshipName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deletePerson(String personName) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

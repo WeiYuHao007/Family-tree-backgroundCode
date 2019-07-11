@@ -10,7 +10,7 @@ import com.orange.familyTree.entity.Genealogy;
 import com.orange.familyTree.repository.GenealogyCrudRepository;
 
 //暂时后台以注解形式开启对指定接口的跨域访问
-@CrossOrigin(origins = {"http://localhost:8080","null"})
+@CrossOrigin
 @RestController
 public class GenealogyController {
 	
