@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.orange.familyTree.entity.Person;
-import com.orange.familyTree.pojo.GenealogyDetail;
+import com.orange.familyTree.pojo.GenealogyDO;
 import com.orange.familyTree.repository.PersonCrudRepository;
 
 
@@ -32,13 +32,13 @@ public class PersonServiceImple implements PersonService{
 	}
 
 	@Override
-	public void modifyPersonProperties(GenealogyDetail newGenealogyDetail) {
+	public void modifyPersonProperties(GenealogyDO newGenealogyDetail) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void createPerson(GenealogyDetail genealogyDetail) {
+	public void createPerson(GenealogyDO genealogyDetail) {
 		// TODO Auto-generated method stub
 		
 	}

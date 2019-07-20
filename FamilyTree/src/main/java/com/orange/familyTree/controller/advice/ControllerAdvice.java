@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.orange.familyTree.exceptions.AccountException;
 import com.orange.familyTree.exceptions.CypherException;
-import com.orange.familyTree.pojo.tools.Result;
-import com.orange.familyTree.pojo.tools.ResultFactory;
+import com.orange.familyTree.pojo.util.Result;
+import com.orange.familyTree.pojo.util.ResultFactory;
 
 @RestControllerAdvice(
 		basePackages = { "com.springboot.familyTree.controller.*" },
 		annotations = Controller.class)
-public class AccountControllerAdvice {
+public class ControllerAdvice {
 	
 	//查询异常
 	@ExceptionHandler(value = CypherException.class)
@@ -28,14 +28,6 @@ public class AccountControllerAdvice {
 	public Result accountException(AccountException ex) {
 		String message = ex.getMessage();
 		Result result = ResultFactory.buildFailResult(message);
-		return result;
-	}
-	
-	//账户未登入或者登入信息失效的异常
-	@ExceptionHandler(value = ServletRequestBindingException.class)
-	public Result authenticationException(Exception ex) {
-		String message = "无身份证明或身份证明过期，请重新登陆以获得新的证明";
-		Result result = ResultFactory.buildAuthenticationResult(message);
 		return result;
 	}
 	

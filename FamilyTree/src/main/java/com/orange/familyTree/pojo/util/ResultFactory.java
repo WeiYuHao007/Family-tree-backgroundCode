@@ -1,4 +1,4 @@
-package com.orange.familyTree.pojo.tools;
+package com.orange.familyTree.pojo.util;
 
 public class ResultFactory {
 	
@@ -14,6 +14,11 @@ public class ResultFactory {
 	//返回成功请求的结果(不需要返回数据)
 	public static Result buildSuccessResult(String message) {
 		return buildResult(ResultCode.SUCCESS, message, null);
+	}
+	
+	//返回成功请求的结果(需要返回信息和数据)
+	public static Result buildSuccessResult(String message, Object data) {
+		return buildResult(ResultCode.SUCCESS, message, data);
 	}
 	
 	//返回请求出现异常的信息的结果

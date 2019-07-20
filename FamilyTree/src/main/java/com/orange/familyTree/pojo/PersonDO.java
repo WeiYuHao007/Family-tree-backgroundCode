@@ -1,5 +1,5 @@
 package com.orange.familyTree.pojo;
 
-public class PersonDetail {
+public class PersonDO {
 
 }

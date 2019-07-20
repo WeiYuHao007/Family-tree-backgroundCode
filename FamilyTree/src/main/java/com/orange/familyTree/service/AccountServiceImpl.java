@@ -1,5 +1,7 @@
 package com.orange.familyTree.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.orange.familyTree.entity.Account;
 import com.orange.familyTree.entity.Genealogy;
 import com.orange.familyTree.exceptions.CypherException;
-import com.orange.familyTree.pojo.AccountDetail;
-import com.orange.familyTree.pojo.AccountViewDetail;
+import com.orange.familyTree.pojo.AccountDO;
+import com.orange.familyTree.pojo.LoginVO;
 import com.orange.familyTree.repository.AccountCrudRepository;
 
 
@@ -21,22 +23,23 @@ public class AccountServiceImpl implements AccountService {
 	@Autowired
 	private AccountCrudRepository accountCrudRepository;
 	
+	
 	@Override
-	public AccountDetail findAccount(AccountViewDetail accountViewDetail) throws CypherException{
+	public AccountDO findAccount(LoginVO loginVO) throws CypherException{
 		// 登入账号
 		try {
-			if(accountViewDetail.getTelephoneNumber() != null) {
+			if(loginVO.getTelephoneNumber() != null) {
 				// 通过电话号码登入
-				Account account = accountCrudRepository.findByTelephoneNumberAndPassword(accountViewDetail.getTelephoneNumber(), 
-						accountViewDetail.getPassword());
-				AccountDetail myAccountDetail = AccountDetail.changeAToAD(account);
-				return myAccountDetail;
+				Account account = accountCrudRepository.findByTelephoneNumberAndPassword(loginVO.getTelephoneNumber(), 
+						loginVO.getPassword());
+				AccountDO accountDetail = AccountDO.changeAToDO(account);
+				return accountDetail;
 			}
 			else {
-				Account account = accountCrudRepository.findByEmailAndPassword(accountViewDetail.getEmail(), 
-						accountViewDetail.getPassword());
-				AccountDetail myAccountDetail = AccountDetail.changeAToAD(account);
-				return myAccountDetail;
+				Account account = accountCrudRepository.findByEmailAndPassword(loginVO.getEmail(), 
+						loginVO.getPassword());
+				AccountDO accountDetail = AccountDO.changeAToDO(account);
+				return accountDetail;
 			}
 		}
 		catch(Exception ex){
@@ -45,10 +48,14 @@ public class AccountServiceImpl implements AccountService {
 		}
 	}
 
+	
 	@Override
-	public void registerAccount(AccountDetail accountDetail) throws CypherException {
+	public void registerAccount(AccountDO accountDetail) throws CypherException {
 		// 注册账号
 		try {
+			//获得当前系统时间
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			accountDetail.setRegistrationTime(df.format(new Date()));
 			accountCrudRepository.registerAccount(accountDetail.getTelephoneNumber(), 
 					accountDetail.getEmail(), accountDetail.getNickName(), accountDetail.getPassword(), 
 					accountDetail.getPrivilegeRole(), accountDetail.getRegistrationTime());
@@ -59,33 +66,9 @@ public class AccountServiceImpl implements AccountService {
 		
 	}
 
-
+	
 	@Override
-	public void focusOnGenealogy(String accountName, String genealogyName) throws CypherException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void cancelFocusOnGenealogy(String accountName, String genealogyName) throws CypherException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<Genealogy> viewAllFocusOnGenealogy(String accountName) throws CypherException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void changePassword(String accountName, String password) throws CypherException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void changePassword(AccountViewDetail accountViewDetail) throws CypherException {
+	public void changePassword(LoginVO accountViewDetail) throws CypherException {
 		// TODO Auto-generated method stub
 		
 	}

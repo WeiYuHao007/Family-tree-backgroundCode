@@ -10,15 +10,14 @@ import org.neo4j.ogm.annotation.Property;
 
 @NodeEntity(label="Genealogy")
 public class Genealogy {
-	
-	//有参构造器
-	public Genealogy(String name, String genealogySuperAdmin) {
+
+	public Genealogy(Long uuid, String name, Set<Integer> followers) {
 		super();
+		this.uuid = uuid;
 		this.name = name;
-		this.genealogySuperAdmin = genealogySuperAdmin;
+		this.followers = followers;
 	}
 
-	//无参构造器
 	public Genealogy() {
 		
 	}
@@ -31,14 +30,8 @@ public class Genealogy {
 	@Property(name = "name")
 	private String name;
 	
-	@Property(name = "genealogySuperAdmin")
-	private String genealogySuperAdmin;
-	
-	@Property(name = "genealogyAdmin")
-	private Set<String> genealogyAdmin;
-	
 	@Property(name = "followers")
-	private Set<String> followers;
+	private Set<Integer> followers;
 	
 	
 	//一系列getter,setter.
@@ -58,27 +51,11 @@ public class Genealogy {
 		this.name = name;
 	}
 
-	public String getGenealogySuperAdmin() {
-		return genealogySuperAdmin;
-	}
-
-	public void setGenealogySuperAdmin(String genealogySuperAdmin) {
-		this.genealogySuperAdmin = genealogySuperAdmin;
-	}
-
-	public Set<String> getGenealogyAdmin() {
-		return genealogyAdmin;
-	}
-
-	public void setGenealogyAdmin(Set<String> genealogyAdmin) {
-		this.genealogyAdmin = genealogyAdmin;
-	}
-
-	public Set<String> getFollowers() {
+	public Set<Integer> getFollowers() {
 		return followers;
 	}
 
-	public void setFollowers(Set<String> followers) {
+	public void setFollowers(Set<Integer> followers) {
 		this.followers = followers;
 	}
 	

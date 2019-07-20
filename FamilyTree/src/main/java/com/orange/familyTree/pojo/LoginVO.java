@@ -1,24 +1,23 @@
 package com.orange.familyTree.pojo;
 
-public class AccountViewDetail {
+public class LoginVO {
 	
-	private String email;
-	
-	private String telephoneNumber;
-	
-	private String password;
-	
-	
-	public AccountViewDetail() {
+	public LoginVO() {
 		
 	}
 	
-	public AccountViewDetail(String email, String telephoneNumber, String password) {
+	public LoginVO(String email, Integer telephoneNumber, String password) {
 		this.email = email;
 		this.telephoneNumber = telephoneNumber;
 		this.password = password;
 	}
-
+	
+	private String email;
+	
+	private Integer telephoneNumber;
+	
+	private String password;
+	
 	
 	public String getEmail() {
 		return email;
@@ -28,11 +27,11 @@ public class AccountViewDetail {
 		this.email = email;
 	}
 
-	public String getTelephoneNumber() {
+	public Integer getTelephoneNumber() {
 		return telephoneNumber;
 	}
 
-	public void setTelephoneNumber(String telephoneNumber) {
+	public void setTelephoneNumber(Integer telephoneNumber) {
 		this.telephoneNumber = telephoneNumber;
 	}
 

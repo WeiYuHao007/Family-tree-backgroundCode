@@ -27,7 +27,7 @@ public class Account {
 	private String password;
 	
 	@Property(name="telephoneNumber")
-	private String telephoneNumber;
+	private Integer telephoneNumber;
 	
 	@Property(name="privilegeRole")
 	private List<String> privilegeRole;
@@ -47,7 +47,7 @@ public class Account {
 		
 	}
 	
-	public Account(String nickName, String email, String password, String telephoneNumber) {
+	public Account(String nickName, String email, String password, Integer telephoneNumber) {
 		super();
 		this.nickName = nickName;
 		this.email = email;
@@ -81,11 +81,11 @@ public class Account {
 		this.password = password;
 	}
 	
-	public String getTelephoneNumber() {
+	public Integer getTelephoneNumber() {
 		return telephoneNumber;
 	}
 	
-	public void setTelephoneNumber(String telephoneNumber) {
+	public void setTelephoneNumber(Integer telephoneNumber) {
 		this.telephoneNumber = telephoneNumber;
 	}
 	

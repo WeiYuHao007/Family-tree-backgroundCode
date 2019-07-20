@@ -14,7 +14,7 @@ public interface AccountCrudRepository extends Neo4jRepository<Account, Long>{
 	@Query("MATCH(a:Account) \n" + 
 			"WHERE a.telephoneNumber={phoneNum} AND a.password={password} \n" + 
 			"RETURN a")
-	Account findByTelephoneNumberAndPassword(@Param("phoneNum") String telephoneNumber, 
+	Account findByTelephoneNumberAndPassword(@Param("phoneNum") Integer telephoneNumber, 
 			@Param("password") String password);
 	
 	//通过邮箱和密码查找账户对象
@@ -32,7 +32,7 @@ public interface AccountCrudRepository extends Neo4jRepository<Account, Long>{
 			"a.password={password},\n" + 
 			"a.privilegeRole={role},\n" + 
 			"a.registrationTime={time}")
-	void registerAccount(@Param("phoneNum") String telephoneNumber, @Param("email") String email,
+	void registerAccount(@Param("phoneNum") Integer telephoneNumber, @Param("email") String email,
 			@Param("nickName") String nickName, @Param("password") String password, 
 			@Param("privilegeRole") List<String> privilegeRole, @Param("registrationTime") String registrationTime);
 

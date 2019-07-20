@@ -1,4 +1,4 @@
-package com.orange.familyTree.pojo.tools;
+package com.orange.familyTree.pojo.util;
 
 public class Result {
 	

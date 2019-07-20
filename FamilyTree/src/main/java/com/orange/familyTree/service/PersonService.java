@@ -3,7 +3,7 @@ package com.orange.familyTree.service;
 import java.util.List;
 
 import com.orange.familyTree.entity.Person;
-import com.orange.familyTree.pojo.GenealogyDetail;
+import com.orange.familyTree.pojo.GenealogyDO;
 
 public interface PersonService {
 	
@@ -14,10 +14,10 @@ public interface PersonService {
 	List<Person> findShortPath(String genealogyName, String startPersonName, String endPersonName);
 
 	//修改节点属性
-	void modifyPersonProperties(GenealogyDetail newGenealogyDetail);
+	void modifyPersonProperties(GenealogyDO newGenealogyDetail);
 	
 	//创建节点
-	void createPerson(GenealogyDetail genealogyDetail);
+	void createPerson(GenealogyDO genealogyDetail);
 	
 	//创建节点关系
 	void createPersonRelationship(String startPersonName, String endPersonName, String relationshipName);
