@@ -3,6 +3,8 @@ package com.orange.familyTree.pojo;
 
 public class AccountVO {
 
+	// 前端能获取的Account，数据不具有敏感性
+	
 	public AccountVO(String email, Integer telephoneNumber, String nickName, String registrationTime) {
 		super();
 		this.email = email;

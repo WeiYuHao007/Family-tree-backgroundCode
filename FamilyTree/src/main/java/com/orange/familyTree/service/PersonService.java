@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.orange.familyTree.entity.Person;
 import com.orange.familyTree.pojo.GenealogyDO;
+import com.orange.familyTree.pojo.util.Result;
 
 public interface PersonService {
 	
@@ -11,7 +12,7 @@ public interface PersonService {
 	Person getPerson(String genealogyName, String personName);
 	
 	//查询两个指定节点间的最短路径
-	List<Person> findShortPath(String genealogyName, String startPersonName, String endPersonName);
+	Result findShortPath(String genealogyName, String startPersonName, String endPersonName);
 
 	//修改节点属性
 	void modifyPersonProperties(GenealogyDO newGenealogyDetail);

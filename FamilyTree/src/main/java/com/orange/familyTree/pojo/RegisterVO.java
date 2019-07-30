@@ -2,6 +2,8 @@ package com.orange.familyTree.pojo;
 
 public class RegisterVO {
 	
+	// 账户注册时前端提交的模型
+	
 	public RegisterVO() {
 		
 	}

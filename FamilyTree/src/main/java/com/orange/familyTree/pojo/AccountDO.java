@@ -6,6 +6,8 @@ import com.orange.familyTree.entity.Account;
 
 public class AccountDO {
 	
+	// 从数据库中读出的Account,数据具有敏感性
+	
 	private String email;
 	
 	private Integer telephoneNumber;

@@ -1,12 +1,11 @@
 package com.orange.familyTree.controller.advice;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.orange.familyTree.exceptions.AccountException;
-import com.orange.familyTree.exceptions.CypherException;
+import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.pojo.util.Result;
 import com.orange.familyTree.pojo.util.ResultFactory;
 
@@ -16,8 +15,8 @@ import com.orange.familyTree.pojo.util.ResultFactory;
 public class ControllerAdvice {
 	
 	//查询异常
-	@ExceptionHandler(value = CypherException.class)
-	public Result cypherException(CypherException ex) {
+	@ExceptionHandler(value = MyCypherException.class)
+	public Result cypherException(MyCypherException ex) {
 		String message = ex.getMessage();
 		Result result = ResultFactory.buildFailResult(message);
 		return result;

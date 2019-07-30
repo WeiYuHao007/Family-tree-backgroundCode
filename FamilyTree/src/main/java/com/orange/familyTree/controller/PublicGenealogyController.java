@@ -21,7 +21,7 @@ public class PublicGenealogyController {
 	@Autowired
 	private GenealogyService genealogyService;
 
-	@GetMapping(value="/account/genealogy/findAll")
+	@GetMapping(value="/genealogy/findAll")
 	public Result findGenealogyByName(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		Integer phoneNum = (Integer)session.getAttribute("SESSION_TELEPHONENUMBER");

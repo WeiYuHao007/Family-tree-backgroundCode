@@ -1,4 +1,4 @@
-package com.orange.familyTree.repository;
+package com.orange.familyTree.dao;
 
 import java.util.List;
 
@@ -17,5 +17,9 @@ public interface GenealogyCrudRepository extends Neo4jRepository<Genealogy, Long
 	@Query("MATCH(a:Account{telephoneNumber:{phoneNum}})-[:FOCUS_ON]->(g:Genealogy)\n" + 
 			"RETURN g.name")
 	List<String> findAllGenealogy(@Param("phoneNum") Integer phoneNum);
-
+	
+	@Query("MATCH(g:Genealogy)\r \n" + 
+			"WHERE g.name = {genealogyName}\r \n" + 
+			"RETURN g.followers")
+	List<Integer> findGenealogyFollowers(@Param("genealogyName") String genealogyName);
 }

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource(value= {"classpath:neo4jConfig.properties"},
 ignoreResourceNotFound=true,encoding="UTF-8",name="neo4j.properties")
 //定义neo4j接口扫描包路径
-@EnableNeo4jRepositories(basePackages = "com.orange.familyTree.repository")
+@EnableNeo4jRepositories(basePackages = "com.orange.familyTree.dao")
 @EntityScan(basePackages="com.orange.familyTree.entity")
 @EnableTransactionManagement
 public class Neo4jConfig {

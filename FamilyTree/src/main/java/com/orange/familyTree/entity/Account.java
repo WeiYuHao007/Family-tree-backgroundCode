@@ -13,6 +13,18 @@ import org.neo4j.ogm.annotation.Relationship;
 @NodeEntity(label="Account")
 public class Account {
 	
+	public Account() {
+	}
+	
+	public Account(String nickName, String email, String password, Integer telephoneNumber) {
+		super();
+		this.nickName = nickName;
+		this.email = email;
+		this.telephoneNumber = telephoneNumber;
+		this.password = password;
+	}
+	
+	
 	//属性
 	@Id @GeneratedValue
 	private Long uuid;
@@ -34,26 +46,6 @@ public class Account {
 	
 	@Property(name="registrationTime")
 	private String registrationTime;
-	
-	
-	//该账号关注的图谱
-	//映射的使用有待后续考虑
-	@Relationship(type="FOCUS_ON", direction= Relationship.OUTGOING)
-	private Set<Genealogy> focusOn;
-	
-	
-	//构造器
-	public Account() {
-		
-	}
-	
-	public Account(String nickName, String email, String password, Integer telephoneNumber) {
-		super();
-		this.nickName = nickName;
-		this.email = email;
-		this.telephoneNumber = telephoneNumber;
-		this.password = password;
-	}
 	
 	
 	//一系列getter、setter
@@ -103,14 +95,6 @@ public class Account {
 	
 	public void setRegistrationTime(String registrationTime) {
 		this.registrationTime = registrationTime;
-	}
-
-	public Set<Genealogy> getFocusOn() {
-		return focusOn;
-	}
-
-	public void setFocusOn(Set<Genealogy> focusOn) {
-		this.focusOn = focusOn;
 	}
 
 	public String getNickName() {

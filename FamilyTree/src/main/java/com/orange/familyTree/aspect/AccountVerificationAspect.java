@@ -3,11 +3,9 @@ package com.orange.familyTree.aspect;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.orange.familyTree.exceptions.AccountException;
 import com.orange.familyTree.pojo.util.ResultFactory;
 
 @Aspect
@@ -37,7 +34,7 @@ public class AccountVerificationAspect {
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 		HttpSession session = request.getSession(false);
 		if (session == null) {
-			String message = "身份认证失效，请重新登陆。";
+			String message = "身份令牌失效，请重新登陆以获取新的令牌。";
 			return ResultFactory.buildAuthenticationResult(message);
 		}
 		return jp.proceed();

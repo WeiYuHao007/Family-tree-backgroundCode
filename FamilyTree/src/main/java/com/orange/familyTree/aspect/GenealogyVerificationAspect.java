@@ -26,7 +26,7 @@ public class GenealogyVerificationAspect {
 	@Autowired
 	private GenealogyService genealogyService;
 
-	@Pointcut("execution(* com.orange.familyTree.controller.ProtectedAccountController.*(..))")
+	@Pointcut("execution(* com.orange.familyTree.controller.ProtectedGenealogyController.*(..))")
 	public void genealogyVerificationPointcut() {
 		
 	}

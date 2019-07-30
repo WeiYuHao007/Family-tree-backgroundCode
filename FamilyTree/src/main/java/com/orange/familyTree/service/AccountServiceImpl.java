@@ -2,18 +2,16 @@ package com.orange.familyTree.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.orange.familyTree.dao.AccountCrudRepository;
 import com.orange.familyTree.entity.Account;
-import com.orange.familyTree.entity.Genealogy;
-import com.orange.familyTree.exceptions.CypherException;
+import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.pojo.AccountDO;
 import com.orange.familyTree.pojo.LoginVO;
-import com.orange.familyTree.repository.AccountCrudRepository;
 
 
 @Service
@@ -25,7 +23,7 @@ public class AccountServiceImpl implements AccountService {
 	
 	
 	@Override
-	public AccountDO findAccount(LoginVO loginVO) throws CypherException{
+	public AccountDO findAccount(LoginVO loginVO) throws MyCypherException{
 		// 登入账号
 		try {
 			if(loginVO.getTelephoneNumber() != null) {
@@ -44,13 +42,13 @@ public class AccountServiceImpl implements AccountService {
 		}
 		catch(Exception ex){
 			// 账号登入失败
-			throw new CypherException("账号或密码错误，请重新输入。");
+			throw new MyCypherException("账号或密码错误，请重新输入。");
 		}
 	}
 
 	
 	@Override
-	public void registerAccount(AccountDO accountDetail) throws CypherException {
+	public void registerAccount(AccountDO accountDetail) throws MyCypherException {
 		// 注册账号
 		try {
 			//获得当前系统时间
@@ -61,14 +59,14 @@ public class AccountServiceImpl implements AccountService {
 					accountDetail.getPrivilegeRole(), accountDetail.getRegistrationTime());
 		}
 		catch(Exception cex) {
-			throw new CypherException("注册失败");
+			throw new MyCypherException("注册失败");
 		}
 		
 	}
 
 	
 	@Override
-	public void changePassword(LoginVO accountViewDetail) throws CypherException {
+	public void changePassword(LoginVO accountViewDetail) throws MyCypherException {
 		// TODO Auto-generated method stub
 		
 	}

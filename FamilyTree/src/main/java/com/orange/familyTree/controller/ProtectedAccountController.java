@@ -23,20 +23,15 @@ public class ProtectedAccountController {
 	private AccountService accountService;
 	
 	
-	@GetMapping(value = "/account/logOut")
+	@GetMapping(value = "/account/logout")
 	@ResponseBody
 	public Result logOut(HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession(false);
-		if(session != null) {
-			session.invalidate();
-			Cookie cookie = new Cookie("JSESSIONID",session.getId());
-			cookie.setMaxAge(0);
-			response.addCookie(cookie);
-			return ResultFactory.buildSuccessResult("注销成功。");
-		}
-		else {
-			return ResultFactory.buildAuthenticationResult("无有效身份证明,无需注销。");
-		}
+		session.invalidate();
+		Cookie cookie = new Cookie("JSESSIONID",session.getId());
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+		return ResultFactory.buildSuccessResult("注销成功。");
 	}
 
 }

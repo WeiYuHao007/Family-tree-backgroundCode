@@ -1,9 +1,15 @@
 package com.orange.familyTree.entity;
 
+import java.util.List;
+
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
+import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.annotation.RelationshipEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @NodeEntity(label="Person")
@@ -42,7 +48,6 @@ public class Person{
 	
 	@Property(name = "majorAchievements")
 	private String majorAchievements;
-
 	
 	//以下为一系列get、set操作。
 	public Long getUuid() {

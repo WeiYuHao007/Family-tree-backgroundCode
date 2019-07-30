@@ -2,6 +2,8 @@ package com.orange.familyTree.pojo;
 
 public class LoginVO {
 	
+	// 账户登录时前端提交的Account
+	
 	public LoginVO() {
 		
 	}
