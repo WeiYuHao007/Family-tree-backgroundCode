@@ -13,14 +13,29 @@ import com.orange.familyTree.entity.Person;
 public interface PersonCrudRepository extends Neo4jRepository<Person, Long>{
 	
 	//Get
-	// 查询两个相邻节点间的关系
-	@Query("MATCH (p1:Person)-[r]->(p2:Person)\r \n" + 
-			"WHERE p1.name = {startPerson} AND p2.name = {endPerson}\r \n" + 
-			"RETURN r.relationshipName")
-	String findRelationship(@Param("startPerson") String startPersonName, 
-			@Param("endPerson") String endPersonName);
+	// 查询指定节点的儿子
+	@Query("MATCH (g)-[:OWNS]->(p1:Person)<-[r]-(p2:Person)\r\n" + 
+			"WHERE g.name = {genealoguName} AND p1.name = {sourcePersonName} AND type(r) = 'IS_SON'\r\n" + 
+			"RETURN p2.name")
+	List<String> findSons(@Param("genealoguName") String genealogyName, @Param("sourcePersonName") String sourcePersonName);
 	
-	// 查询两节点之间的最短路径
+	// 查询指定节点的妻子与女儿
+	@Query("MATCH (g)-[:OWNS]->(p1:Person)\r \n" + 
+			"WHERE g.name = {genealogyName} AND p1.name = {sourcePersonName} \r \n" + 
+			"MATCH (p1)<-[r]-(p2:Person)\r \n" + 
+			"WHERE type(r) = 'IS_WIFE' OR type(r) = 'IS_DAUGHTER'\r \n" + 
+			"RETURN p2.name")
+	List<String> findWifeAndDaughter(@Param("genealogyName") String genealogyName,
+			@Param("sourcePersonName") String sourcePersonName);
+	
+	// 查询两个相邻节点间的关系
+	@Query("MATCH (p1:Person)<-[:OWNS]-(g)-[:OWNS]->(p2:Person), (p1)-[r]->(p2)" + 
+			"WHERE p1.name = {startPerson} AND p2.name = {endPerson} AND g.name = {genealogyName}\r\n" + 
+			"RETURN r.relationshipName")
+	String findRelationship(@Param("genealogyName") String genealogyName, 
+			@Param("startPerson") String startPersonName, @Param("endPerson") String endPersonName);
+	
+	// 查询两节点之间的最短路径（路径最长为九）
 	@Query("MATCH(p2)<-[:OWNS]-(g)-[:OWNS]->(p1)\r \n" + 
 			"WHERE g.name = {genealogyName} AND p1.name = {startPerson} AND p2.name = {endPerson}\r \n" + 
 			"WITH p1,p2 MATCH p = shortestpath((p1)-[*..9]-(p2))\r \n" + 

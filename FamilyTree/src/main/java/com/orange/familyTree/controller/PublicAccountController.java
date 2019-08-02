@@ -29,9 +29,9 @@ public class PublicAccountController {
 	@PostMapping(value="/account/signIn")
 	@ResponseBody
 	public Result signIn(HttpServletRequest request, HttpServletResponse response, 
-			@RequestBody LoginVO loginVo) {
+			@RequestBody LoginVO loginVO) {
 		//登入
-		AccountDO accountDO = accountService.findAccount(loginVo);
+		AccountDO accountDO = accountService.findAccount(loginVO);
 		//设置为登录状态
 		HttpSession session = request.getSession(true);
 		Integer telephoneNumber = accountDO.getTelephoneNumber();
