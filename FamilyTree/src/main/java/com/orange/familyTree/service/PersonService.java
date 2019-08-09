@@ -1,6 +1,6 @@
 package com.orange.familyTree.service;
 
-import com.orange.familyTree.entity.Person;
+import com.orange.familyTree.entity.neo4j.Person;
 import com.orange.familyTree.pojo.GenealogyDO;
 import com.orange.familyTree.pojo.NodeVO;
 import com.orange.familyTree.pojo.util.Result;
@@ -8,7 +8,7 @@ import com.orange.familyTree.pojo.util.Result;
 public interface PersonService {
 	
 	// 查看指定节点的妻子与女儿
-	Result getWifesAndDaughters(String genealogyName, NodeVO nodeVO, Integer radius);
+	Result getWivesAndDaughters(String genealogyName, NodeVO nodeVO, Integer radius);
 	
 	// 查看指定节点的儿子
 	Result getSons(String genealogyName, NodeVO nodeVO, Integer radius);

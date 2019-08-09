@@ -31,11 +31,11 @@ public class PublicPersonController {
 		return personService.findShortPath(genealogyName, startPersonName, endPersonName, radius);
 	}
 	
-	@PostMapping(value = "/tree/{treeName}/{personName}/wifesAndDaughters/{radius}")
-	public Result findWifesAndDaughters(
-			@PathVariable("treeName") String genealogyName,
-			@RequestBody NodeVO nodeVO, @PathVariable("radius") Integer radius) {
-		return personService.getWifesAndDaughters(genealogyName, nodeVO, radius);
+	@PostMapping(value = "/tree/{tree_name}/{person_name}/wives-and-daughters/{radius}")
+	public Result findWivesAndDaughters(
+			@PathVariable("tree_name") String genealogyName,
+			@PathVariable("radius") Integer radius, @RequestBody NodeVO nodeVO) {
+		return personService.getWivesAndDaughters(genealogyName, nodeVO, radius);
 	}
 	
 	@PostMapping(value = "/tree/{treeName}/{personName}/sons/{radius}")

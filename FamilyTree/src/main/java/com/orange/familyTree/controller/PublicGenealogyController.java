@@ -21,11 +21,11 @@ public class PublicGenealogyController {
 	@Autowired
 	private GenealogyService genealogyService;
 
-	@GetMapping(value="/genealogy/findAll")
+	@GetMapping(value="/genealogies")
 	public Result findGenealogyByName(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
-		Integer phoneNum = (Integer)session.getAttribute("SESSION_TELEPHONENUMBER");
-		List<String> nameList = genealogyService.findAllGenealogy(phoneNum);
+		Long userId = (Long)session.getAttribute("SESSION_USERID");
+		List<String> nameList = genealogyService.findAllGenealogy(userId);
 		Result result = ResultFactory.buildSuccessResult(nameList);
 		return result;
 	}

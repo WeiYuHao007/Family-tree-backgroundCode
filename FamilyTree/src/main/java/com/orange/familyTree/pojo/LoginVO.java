@@ -2,21 +2,19 @@ package com.orange.familyTree.pojo;
 
 public class LoginVO {
 	
-	// 账户登录时前端提交的Account
+	// 账户登录时前端提交的User
 	
-	public LoginVO() {
-		
-	}
+	public LoginVO() { }
 	
-	public LoginVO(String email, Integer telephoneNumber, String password) {
+	public LoginVO(String email, Integer phoneNum, String password) {
 		this.email = email;
-		this.telephoneNumber = telephoneNumber;
+		this.phoneNum = phoneNum;
 		this.password = password;
 	}
 	
 	private String email;
 	
-	private Integer telephoneNumber;
+	private Integer phoneNum;
 	
 	private String password;
 	
@@ -29,12 +27,12 @@ public class LoginVO {
 		this.email = email;
 	}
 
-	public Integer getTelephoneNumber() {
-		return telephoneNumber;
+	public Integer getPhoneNum() {
+		return phoneNum;
 	}
 
-	public void setTelephoneNumber(Integer telephoneNumber) {
-		this.telephoneNumber = telephoneNumber;
+	public void setPhoneNum(Integer phoneNum) {
+		this.phoneNum = phoneNum;
 	}
 
 	public String getPassword() {

@@ -1,4 +1,4 @@
-package com.orange.familyTree.entity;
+package com.orange.familyTree.entity.neo4j;
 
 
 import org.neo4j.ogm.annotation.GeneratedValue;

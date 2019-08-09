@@ -37,10 +37,10 @@ public class GenealogyVerificationAspect {
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 		HttpSession session = request.getSession(false);
 		String genealogyName = request.getParameter("genealogyName");
-		Integer telephoneNumber = (Integer)session.getAttribute("SESSION_TELEPHONENUMBER");
-		List<Integer> followersList = genealogyService.findFollowersByGenealogy(genealogyName);
-		for(Integer follower: followersList) {
-			if(follower.intValue() == telephoneNumber.intValue()) {
+		Long userId = (Long)session.getAttribute("SESSION_USERID");
+		List<Long> followersList = genealogyService.findFollowersByGenealogy(genealogyName);
+		for(Long follower: followersList) {
+			if(follower.intValue() == userId.intValue()) {
 				return jp.proceed();
 			}
 		}

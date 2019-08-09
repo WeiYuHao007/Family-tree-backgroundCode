@@ -18,11 +18,11 @@ import com.orange.familyTree.pojo.util.ResultFactory;
 @Aspect
 @Component
 @Order(1)
-public class AccountVerificationAspect {
+public class UserVerificationAspect {
 
 	//匹配切点（除去登入与注册）
 	@Pointcut("execution(* com.orange.familyTree.controller.*.*(..))"
-			+ " && !execution(* com.orange.familyTree.controller.PublicAccountController.*(..))")
+			+ " && !execution(* com.orange.familyTree.controller.PublicUserController.*(..))")
 	public void accountVerificationAspect() {
 		
 	}

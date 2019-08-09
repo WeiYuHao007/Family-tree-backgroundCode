@@ -1,4 +1,4 @@
-package com.orange.familyTree.dao;
+package com.orange.familyTree.dao.neo4j;
 
 import java.util.List;
 
@@ -7,17 +7,18 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.orange.familyTree.entity.Person;
+import com.orange.familyTree.entity.neo4j.Person;
 
 @Repository
 public interface PersonCrudRepository extends Neo4jRepository<Person, Long>{
 	
 	//Get
-	// 查询指定节点的儿子
-	@Query("MATCH (g)-[:OWNS]->(p1:Person)<-[r]-(p2:Person)\r\n" + 
-			"WHERE g.name = {genealoguName} AND p1.name = {sourcePersonName} AND type(r) = 'IS_SON'\r\n" + 
+	
+	@Query("MATCH (g:Genealogy)-[:OWNS]->(p1:Person)<-[:IS_SON]-(p2:Person) \r\n" +
+			"WHERE g.name = {genealogyName} AND p1.name = {fartherName} \r\n" + 
 			"RETURN p2.name")
-	List<String> findSons(@Param("genealoguName") String genealogyName, @Param("sourcePersonName") String sourcePersonName);
+	List<String> findTargetSons(@Param("genealogyName") String genealogyName, 
+			@Param("fartherName") String fartherName);
 	
 	// 查询指定节点的妻子与女儿
 	@Query("MATCH (g)-[:OWNS]->(p1:Person)\r \n" + 

@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.orange.familyTree.dao.GenealogyCrudRepository;
-import com.orange.familyTree.entity.Genealogy;
-import com.orange.familyTree.entity.Person;
+import com.orange.familyTree.dao.neo4j.GenealogyCrudRepository;
+import com.orange.familyTree.entity.neo4j.Genealogy;
+import com.orange.familyTree.entity.neo4j.Person;
 import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.pojo.GenealogyDO;
 
@@ -42,9 +42,9 @@ public class GenealogyServiceImpl implements GenealogyService {
 
 
 	@Override
-	public List<Integer> findFollowersByGenealogy(String genealogyName) {
+	public List<Long> findFollowersByGenealogy(String genealogyName) {
 		try {
-			List<Integer> followersList = genealogyCrudRepository.findGenealogyFollowers(genealogyName);
+			List<Long> followersList = genealogyCrudRepository.findGenealogyFollowers(genealogyName);
 			return followersList;
 		}
 		catch(Exception ex) {
@@ -54,9 +54,9 @@ public class GenealogyServiceImpl implements GenealogyService {
 
 
 	@Override
-	public List<String> findAllGenealogy(Integer phoneNum) throws MyCypherException {
+	public List<String> findAllGenealogy(Long userId) throws MyCypherException {
 		try {
-			List<String> nameList = genealogyCrudRepository.findAllGenealogy(phoneNum);
+			List<String> nameList = genealogyCrudRepository.findAllGenealogy(userId);
 			return nameList;
 		}
 		catch(Exception ex){

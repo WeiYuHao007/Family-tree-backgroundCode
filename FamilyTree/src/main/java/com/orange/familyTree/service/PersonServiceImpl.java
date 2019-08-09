@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.orange.familyTree.dao.PersonCrudRepository;
-import com.orange.familyTree.entity.Person;
+import com.orange.familyTree.dao.neo4j.PersonCrudRepository;
+import com.orange.familyTree.entity.neo4j.Person;
 import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.pojo.GenealogyDO;
 import com.orange.familyTree.pojo.NodeVO;
@@ -20,7 +20,7 @@ import com.orange.familyTree.pojo.util.ResultFactory;
 
 @Service
 @Transactional
-public class PersonServiceImple implements PersonService{
+public class PersonServiceImpl implements PersonService{
 	
 	@Autowired
 	private PersonCrudRepository personCrudRepository;
@@ -33,7 +33,7 @@ public class PersonServiceImple implements PersonService{
 	}
 	
 	@Override
-	public Result getWifesAndDaughters(String genealogyName, NodeVO nodeVO, Integer radius) {
+	public Result getWivesAndDaughters(String genealogyName, NodeVO nodeVO, Integer radius) {
 		try {
 			List<String> nodesNameList = personCrudRepository.findWifeAndDaughter(genealogyName, 
 					nodeVO.getName());
@@ -49,8 +49,8 @@ public class PersonServiceImple implements PersonService{
 				nodesNameList.add(0, nodeVO.getName());
 				nodesNameListLength++;
 				
-				for(int i = 0; i < nodesNameListLength - 1; i++) {
-					for(int j = i + 1; j < nodesNameListLength; j++) {
+				for(int i = 0; i < nodesNameListLength; i++) {
+					for(int j = 0; j < nodesNameListLength && i != j; j++) {
 						String relationshipName = personCrudRepository.findRelationship(genealogyName, 
 								nodesNameList.get(i),nodesNameList.get(j));
 						RelationshipVO relationshipVO = new RelationshipVO(nodesNameList.get(i), nodesNameList.get(j),
@@ -68,7 +68,6 @@ public class PersonServiceImple implements PersonService{
 		}
 		catch(Exception ex) {
 			// 无需返回异常，将异常压制，不向前端返回任何信息
-			System.out.print(ex.getStackTrace());
 			return null;
 		}
 	}
@@ -76,8 +75,7 @@ public class PersonServiceImple implements PersonService{
 	@Override
 	public Result getSons(String genealogyName, NodeVO fartherNode, Integer radius) {
 		try {
-			List<String> sonsNameList = personCrudRepository.findSons(genealogyName, 
-					fartherNode.getName());
+			List<String> sonsNameList = personCrudRepository.findTargetSons(genealogyName, fartherNode.getName());
 			int sonsNameListLength = sonsNameList.size();
 			if(sonsNameListLength != 0) {
 				// 将查询到的节点包装好打包成节点数组
@@ -85,10 +83,14 @@ public class PersonServiceImple implements PersonService{
 				// 将节点间的关系包装好并打包成关系数组
 				ArrayList<RelationshipVO> relationships = new ArrayList<>();
 				for(int i = 0; i < sonsNameList.size(); i++) {
-					String relationshipName = "儿子";
-					RelationshipVO relationshipVO = new RelationshipVO(sonsNameList.get(i), fartherNode.getName(),
-							relationshipName);
-					relationships.add(relationshipVO);
+					String sons = "儿子";
+					RelationshipVO sonRelationship = new RelationshipVO(sonsNameList.get(i), fartherNode.getName(),
+							sons);
+					relationships.add(sonRelationship);
+					String farther = "父亲";
+					RelationshipVO fartherRelationship = new RelationshipVO(fartherNode.getName(), 
+							sonsNameList.get(i), farther);
+					relationships.add(fartherRelationship);
 				}
 				// 成功返回
 				Object[] data = new Object[] {nodes, relationships};
@@ -101,7 +103,6 @@ public class PersonServiceImple implements PersonService{
 		}
 		catch(Exception ex) {
 			// 无需返回异常，将异常压制，不向前端返回任何信息
-			System.out.print(ex.getStackTrace());
 			return null;
 		}
 	}

@@ -1,4 +1,4 @@
-package com.orange.familyTree.entity;
+package com.orange.familyTree.entity.neo4j;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import org.neo4j.ogm.annotation.Property;
 @NodeEntity(label="Genealogy")
 public class Genealogy {
 
-	public Genealogy(Long uuid, String name, List<Integer> followers) {
+	public Genealogy(Long uuid, String name, List<Long> followers) {
 		super();
 		this.uuid = uuid;
 		this.name = name;
@@ -30,7 +30,7 @@ public class Genealogy {
 	private String name;
 	
 	@Property(name = "followers")
-	private List<Integer> followers;
+	private List<Long> followers;
 	
 	
 	//一系列getter,setter.
@@ -50,11 +50,11 @@ public class Genealogy {
 		this.name = name;
 	}
 
-	public List<Integer> getFollowers() {
+	public List<Long> getFollowers() {
 		return followers;
 	}
 
-	public void setFollowers(List<Integer> followers) {
+	public void setFollowers(List<Long> followers) {
 		this.followers = followers;
 	}
 	

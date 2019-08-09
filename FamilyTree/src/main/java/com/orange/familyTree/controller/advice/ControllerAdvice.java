@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.orange.familyTree.exceptions.AccountException;
+import com.orange.familyTree.exceptions.UserException;
 import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.pojo.util.Result;
 import com.orange.familyTree.pojo.util.ResultFactory;
@@ -23,8 +23,8 @@ public class ControllerAdvice {
 	}
 	
 	//账户有关处理产生的异常
-	@ExceptionHandler(value = AccountException.class)
-	public Result accountException(AccountException ex) {
+	@ExceptionHandler(value = UserException.class)
+	public Result accountException(UserException ex) {
 		String message = ex.getMessage();
 		Result result = ResultFactory.buildFailResult(message);
 		return result;

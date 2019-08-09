@@ -1,7 +1,8 @@
 package com.orange.familyTree.pojo;
 
 public class NodeVO {
-	
+
+	// 前端节点渲染模板
 	public NodeVO() {}
 	
 	public NodeVO(String name, Integer x, Integer y) {
@@ -12,7 +13,9 @@ public class NodeVO {
 	}
 	
 	private String name;
+
 	private Integer x;
+
 	private Integer y;
 	
 	public String getName() {

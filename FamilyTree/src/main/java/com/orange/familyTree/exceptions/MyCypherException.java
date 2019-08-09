@@ -6,12 +6,12 @@ public class MyCypherException extends RuntimeException{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private String message;
-	
+
 	public MyCypherException(String message) {
 		this.message = message;
 	}
+	
+	private String message;
 
 	public String getMessage() {
 		return message;
