@@ -1,5 +1,6 @@
 package com.orange.familyTree.controller.advice;
 
+import com.orange.familyTree.exceptions.MySQLException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,15 +15,23 @@ import com.orange.familyTree.pojo.util.ResultFactory;
 		annotations = Controller.class)
 public class ControllerAdvice {
 	
-	//查询异常
+	// Neo4j查询异常
 	@ExceptionHandler(value = MyCypherException.class)
 	public Result cypherException(MyCypherException ex) {
 		String message = ex.getMessage();
 		Result result = ResultFactory.buildFailResult(message);
 		return result;
 	}
-	
-	//账户有关处理产生的异常
+
+	// MySQL查询异常
+	@ExceptionHandler(value = MySQLException.class)
+	public Result sqlException(MySQLException ex) {
+		String message = ex.getMessage();
+		Result result = ResultFactory.buildFailResult(message);
+		return result;
+	}
+
+	// 账户有关处理产生的异常
 	@ExceptionHandler(value = UserException.class)
 	public Result accountException(UserException ex) {
 		String message = ex.getMessage();

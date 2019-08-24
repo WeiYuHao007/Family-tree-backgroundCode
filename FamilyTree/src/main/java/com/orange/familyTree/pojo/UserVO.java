@@ -1,15 +1,17 @@
 package com.orange.familyTree.pojo;
 
 public class UserVO {
-    // 前端能获取的User，数据不具有敏感性
+
+    // 前端个人卡片中的数据
 
     public UserVO() {}
 
-    public UserVO(String email, Integer phoneNum, String nickName, String registrationTime) {
+    public UserVO(String email, Integer phoneNum, String nickName, String introduction,String registrationTime) {
         super();
         this.email = email;
         this.phoneNum = phoneNum;
         this.nickName = nickName;
+        this.introduction = introduction;
         this.registrationTime = registrationTime;
     }
 
@@ -21,6 +23,8 @@ public class UserVO {
     private String nickName;
 
     private String registrationTime;
+
+    private String introduction;
 
 
     public String getEmail() {
@@ -53,5 +57,13 @@ public class UserVO {
 
     public void setRegistrationTime(String registrationTime) {
         this.registrationTime = registrationTime;
+    }
+
+    public String getIntroduction() {
+        return introduction;
+    }
+
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
     }
 }

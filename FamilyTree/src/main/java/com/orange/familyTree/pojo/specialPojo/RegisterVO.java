@@ -1,7 +1,9 @@
-package com.orange.familyTree.pojo;
+package com.orange.familyTree.pojo.specialPojo;
 
 public class RegisterVO {
 
+	// 注册实体
+	
     public RegisterVO() {}
 
     public RegisterVO(String nickname, Integer phoneNum, String email, String password) {

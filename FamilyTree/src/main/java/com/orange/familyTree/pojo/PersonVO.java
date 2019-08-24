@@ -1,19 +1,11 @@
-package com.orange.familyTree.entity.neo4j;
+package com.orange.familyTree.pojo;
 
+public class PersonVO {
 
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Property;
-
-
-@NodeEntity(label="Person")
-public class Person{
-
-	public Person() {}
+	public PersonVO() {}
 	
 	//有参构造器
-	public Person(String name, String birthTime, String deathTime,
+	public PersonVO(String name, String birthTime, String deathTime,
 			String majorAchievements) {
 		super();
 		this.name = name;
@@ -22,30 +14,15 @@ public class Person{
 		this.majorAchievements = majorAchievements;
 	}
 
-	//以下为节点属性
-	@Id @GeneratedValue
-	private Long uuid;
-
-	@Property(name = "name")
+	
 	private String name;
-	
-	@Property(name = "birthTime")
+
 	private String birthTime;
-	
-	@Property(name = "deathTime")
+
 	private String deathTime;
-	
-	@Property(name = "majorAchievements")
+
 	private String majorAchievements;
 	
-	//以下为一系列get、set操作。
-	public Long getUuid() {
-		return uuid;
-	}
-	
-	public void setUuid(Long uuid) {
-		this.uuid = uuid;
-	}
 	
 	public void setName(String name) {
 		this.name = name;

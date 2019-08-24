@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.orange.familyTree.dao.mysql.GenealogyMySQLRepository">
+    <select id="findGenealogyById" resultType="genealogy">
+        SELECT *
+        FROM genealogy
+        WHERE genealogyId = #{id};
+    </select>
+    <select id="findGenealogyIdByName" resultType="Long">
+        SELECT genealogyId
+        FROM genealogy
+        WHERE genealogyName = #{name};
+    </select>
+    <select id="createGenealogy">
+        INSERT INTO genealogy(genealogyName, genealogyAdmin, genealogyDescription)
+        VALUES(#{name}, #{admin}, #{description});
+    </select>
+    <select id="deleteGenealogy">
+        DELETE FROM genealogy
+        WHERE genealogyId = #{id};
+    </select>
+    <select id="changeGenealogyName">
+        UPDATE genealogy
+        SET genealogyName = #{name}
+        WHERE genealogyId = #{id};
+    </select>
+    <select id="changeGenealogyDescription">
+        UPDATE genealogy
+        SET genealogyDescription = #{description}
+        WHERE genealogyId = #{id};
+    </select>
+    <select id="changeGenealogyAdmin">
+        UPDATE genealogy
+        SET genealogyAdmin = #{admins}
+        WHERE genealogyId = #{id};
+    </select>
+</mapper>

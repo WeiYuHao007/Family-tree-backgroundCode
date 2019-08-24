@@ -1,18 +1,20 @@
 package com.orange.familyTree.pojo;
 
 import com.orange.familyTree.entity.mysql.User;
+import com.orange.familyTree.pojo.specialPojo.UserShowVO;
 
 public class UserDO {
 
     public UserDO() {}
 
     public UserDO(Long userId, String userNickname, Integer userPhoneNum, String userEmail, String userPassword,
-                String userRegisterTime, Integer userRoleNum) {
+                String userIntroduction, String userRegisterTime, Integer userRoleNum) {
         this.userId = userId;
         this.userNickname = userNickname;
         this.userPhoneNum = userPhoneNum;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
+        this.userIntroduction = userIntroduction;
         this.userRegisterTime = userRegisterTime;
         this.userRoleNum = userRoleNum;
     }
@@ -29,6 +31,8 @@ public class UserDO {
 
     private String userRegisterTime;
 
+    private String userIntroduction;
+
     private Integer userRoleNum;
 
     public static UserDO changeEToDO(User user) {
@@ -38,10 +42,11 @@ public class UserDO {
         Integer userPhoneNum = user.getUserPhoneNum();
         String userEmail = user.getUserEmail();
         String userPassword = user.getUserPassword();
+        String userIntroduction = user.getUserIntroduction();
         String userRegisterTime = user.getUserRegisterTime();
         Integer userRoleNum = user.getUserRole();
-        UserDO userDO = new UserDO(userId, userNickname, userPhoneNum, userEmail, userPassword, userRegisterTime,
-                userRoleNum);
+        UserDO userDO = new UserDO(userId, userNickname, userPhoneNum, userEmail, userPassword, userIntroduction,
+                userRegisterTime, userRoleNum);
         return userDO;
 
     }
@@ -51,9 +56,20 @@ public class UserDO {
         String email = userDO.userEmail;
         Integer phoneNum = userDO.userPhoneNum;
         String nickname = userDO.userNickname;
+        String introduction = userDO.userIntroduction;
         String registrationTime = userDO.userRegisterTime;
-        UserVO userVO = new UserVO(email, phoneNum, nickname, registrationTime);
+        UserVO userVO = new UserVO(email, phoneNum, nickname, introduction, registrationTime);
         return userVO;
+
+    }
+
+    public static UserShowVO changeToShow(UserDO userDO) {
+
+        String nickname = userDO.userNickname;
+        String introduction = userDO.userIntroduction;
+        String registrationTime = userDO.userRegisterTime;
+        UserShowVO userShow = new UserShowVO(nickname, introduction, registrationTime);
+        return userShow;
 
     }
 
@@ -69,7 +85,7 @@ public class UserDO {
         return userNickname;
     }
 
-    public void setUserNickname(String userNickName) {
+    public void setUserNickname(String userNickname) {
         this.userNickname = userNickname;
     }
 
@@ -111,5 +127,13 @@ public class UserDO {
 
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
+    }
+
+    public String getUserIntroduction() {
+        return userIntroduction;
+    }
+
+    public void setUserIntroduction(String userIntroduction) {
+        this.userIntroduction = userIntroduction;
     }
 }

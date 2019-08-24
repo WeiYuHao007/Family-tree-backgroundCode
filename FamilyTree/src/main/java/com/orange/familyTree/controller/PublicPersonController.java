@@ -3,13 +3,9 @@ package com.orange.familyTree.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.orange.familyTree.pojo.NodeVO;
 import com.orange.familyTree.pojo.util.Result;
 import com.orange.familyTree.service.PersonService;
 
@@ -19,29 +15,34 @@ public class PublicPersonController {
 	
 	@Autowired
 	private PersonService personService;
-
-	@GetMapping(value = "/tree/{treeName}/shortestpath")
+	
+	// 返回两个指定节点的最短路径
+	// 返回格式[[nodeNames],[relationshipNames]]
+	@GetMapping(value = "/tree/{tree-name}/node/shortestpath")
 	public Result findShortestPathNode(
-			@PathVariable("treeName") String genealogyName,
+			@PathVariable("tree-name") String genealogyName, 
 			@RequestParam("startPersonName") String startPersonName,
 			@RequestParam("endPersonName") String endPersonName,
 			@RequestParam("radius") Integer radius) {
-		// 返回两个指定节点的最短路径
-		// 返回格式[[nodeNames],[relationshipNames]]
-		return personService.findShortPath(genealogyName, startPersonName, endPersonName, radius);
+		return personService.getShortPath(genealogyName, startPersonName, endPersonName, radius);
 	}
-	
-	@PostMapping(value = "/tree/{tree_name}/{person_name}/wives-and-daughters/{radius}")
+
+	// 获得指定节点的所有妻子与女儿节点
+	@GetMapping(value = "/tree/{tree-name}/node/{person-name}/wives-and-daughters")
 	public Result findWivesAndDaughters(
-			@PathVariable("tree_name") String genealogyName,
-			@PathVariable("radius") Integer radius, @RequestBody NodeVO nodeVO) {
-		return personService.getWivesAndDaughters(genealogyName, nodeVO, radius);
+			@PathVariable("tree-name") String genealogyName, @RequestParam("name") String personName,
+			@RequestParam("x") Integer x, @RequestParam("y") Integer y, 
+			@RequestParam("radius") Integer radius) {
+		return personService.getWivesAndDaughters(genealogyName, personName, x, y, radius);
 	}
-	
-	@PostMapping(value = "/tree/{treeName}/{personName}/sons/{radius}")
+
+
+	// 获得指定节点的所有儿子节点
+	@GetMapping(value = "/tree/{tree-name}/node/{person-name}/sons")
 	public Result findSons(
-			@PathVariable("treeName") String genealogyName,
-			@RequestBody NodeVO nodeVO, @PathVariable("radius") Integer radius) {
-		return personService.getSons(genealogyName, nodeVO, radius);
+			@PathVariable("tree-name") String genealogyName, @RequestParam("name") String personName,
+			@RequestParam("x") Integer x, @RequestParam("y") Integer y, 
+			@RequestParam("radius") Integer radius) {
+		return personService.getSons(genealogyName, personName, x, y, radius);
 	}
 }

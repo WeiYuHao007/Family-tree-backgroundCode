@@ -2,10 +2,15 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.orange.familyTree.dao.mysql.UserRepository">
+<mapper namespace="com.orange.familyTree.dao.mysql.UserMySQLRepository">
     <select id="registerUser">
         INSERT INTO user(userNickname, userPhoneNum, userEmail, userPassword, userRegisterTime, userRole)
         VALUES (#{name}, #{phoneNum}, #{email}, #{password}, now(), 2);
+    </select>
+    <select id="findUserById" resultType="user">
+        SELECT *
+        FROM user
+        WHERE userId = #{id};
     </select>
     <select id="findUserByPhoneNumAndPassword" resultType="user">
         SELECT *
@@ -16,5 +21,14 @@
         SELECT *
         FROM user
         WHERE userEmail = #{email} AND userPassword = #{password};
+    </select>
+    <select id="findUserByNickName" resultType="user">
+        SELECT *
+        FROM user
+        WHERE userNickname =#{nickname}
+    </select>
+    <select id="destroyUserById">
+        DELETE FROM user
+        WHERE userId = #{id};
     </select>
 </mapper>

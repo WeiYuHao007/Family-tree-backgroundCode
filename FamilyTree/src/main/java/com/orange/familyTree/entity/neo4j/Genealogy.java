@@ -1,7 +1,5 @@
 package com.orange.familyTree.entity.neo4j;
 
-import java.util.List;
-
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -11,26 +9,25 @@ import org.neo4j.ogm.annotation.Property;
 @NodeEntity(label="Genealogy")
 public class Genealogy {
 
-	public Genealogy(Long uuid, String name, List<Long> followers) {
+	public Genealogy() {}
+
+	public Genealogy(Long uuid, Long genealogyId, String name) {
 		super();
 		this.uuid = uuid;
+		this.genealogyId = genealogyId;
 		this.name = name;
-		this.followers = followers;
-	}
-
-	public Genealogy() {
 	}
 
 
 	//属性
 	@Id @GeneratedValue
 	private Long uuid;
-	
+
+	@Property(name = "genealogyId")
+	private Long genealogyId;
+
 	@Property(name = "name")
 	private String name;
-	
-	@Property(name = "followers")
-	private List<Long> followers;
 	
 	
 	//一系列getter,setter.
@@ -50,12 +47,11 @@ public class Genealogy {
 		this.name = name;
 	}
 
-	public List<Long> getFollowers() {
-		return followers;
+	public Long getGenealogyId() {
+		return genealogyId;
 	}
 
-	public void setFollowers(List<Long> followers) {
-		this.followers = followers;
+	public void setGenealogyId(Long genealogyId) {
+		this.genealogyId = genealogyId;
 	}
-	
 }

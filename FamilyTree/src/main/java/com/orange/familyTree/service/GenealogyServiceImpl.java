@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.orange.familyTree.dao.neo4j.GenealogyCrudRepository;
+import com.orange.familyTree.dao.neo4j.GenealogyNeo4jRepository;
 import com.orange.familyTree.entity.neo4j.Genealogy;
 import com.orange.familyTree.entity.neo4j.Person;
 import com.orange.familyTree.exceptions.MyCypherException;
-import com.orange.familyTree.pojo.GenealogyDO;
 
 
 @Service
@@ -18,10 +17,10 @@ import com.orange.familyTree.pojo.GenealogyDO;
 public class GenealogyServiceImpl implements GenealogyService {
 	
 	@Autowired
-	private GenealogyCrudRepository genealogyCrudRepository;
+	private GenealogyNeo4jRepository genealogyNeo4jRepository;
 
 	@Override
-	public List<Genealogy> findGenealogies() throws MyCypherException {
+	public Genealogy findGenealogies() throws MyCypherException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -35,28 +34,9 @@ public class GenealogyServiceImpl implements GenealogyService {
 
 
 	@Override
-	public void createGenealogy(GenealogyDO genealogyDetail) throws MyCypherException {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public List<Long> findFollowersByGenealogy(String genealogyName) {
-		try {
-			List<Long> followersList = genealogyCrudRepository.findGenealogyFollowers(genealogyName);
-			return followersList;
-		}
-		catch(Exception ex) {
-			throw new MyCypherException("关注图谱列表显示失败，请重新认证身份。");
-		}
-	}
-
-
-	@Override
 	public List<String> findAllGenealogy(Long userId) throws MyCypherException {
 		try {
-			List<String> nameList = genealogyCrudRepository.findAllGenealogy(userId);
+			List<String> nameList = genealogyNeo4jRepository.findAllGenealogy(userId);
 			return nameList;
 		}
 		catch(Exception ex){
@@ -66,9 +46,29 @@ public class GenealogyServiceImpl implements GenealogyService {
 
 
 	@Override
-	public List<Person> showGenealogy() throws MyCypherException {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Long> findGenealogyFollowersByName(String genealogyName) throws MyCypherException {
+		try {
+			List<Long> followersList = genealogyNeo4jRepository.findGenealogyFollowersByName(genealogyName);
+			return followersList;
+		}
+		catch(Exception ex) {
+			throw new MyCypherException("查询图谱关注者异常。");
+		}
 	}
+
+
+
+	
+	@Override
+	public List<Long> findGenealogyAdminsByName(String genealogyName) throws MyCypherException {
+		try {
+			List<Long> adminsList = genealogyNeo4jRepository.findGenealogyAdminsByName(genealogyName);
+			return adminsList;
+		}
+		catch(Exception ex) {
+			throw new MyCypherException("查询图谱管理员异常。");
+		}
+	}
+
 
 }

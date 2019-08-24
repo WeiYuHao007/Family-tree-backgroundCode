@@ -1,4 +1,4 @@
-package com.orange.familyTree.pojo;
+package com.orange.familyTree.pojo.specialPojo;
 
 public class RelationshipVO {
 	

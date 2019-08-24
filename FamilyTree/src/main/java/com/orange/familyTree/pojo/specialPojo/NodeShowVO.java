@@ -1,11 +1,11 @@
-package com.orange.familyTree.pojo;
+package com.orange.familyTree.pojo.specialPojo;
 
-public class NodeVO {
+public class NodeShowVO {
 
 	// 前端节点渲染模板
-	public NodeVO() {}
+	public NodeShowVO() {}
 	
-	public NodeVO(String name, Integer x, Integer y) {
+	public NodeShowVO(String name, Integer x, Integer y) {
 		super();
 		this.name = name;
 		this.x = x;

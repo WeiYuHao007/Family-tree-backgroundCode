@@ -8,12 +8,13 @@ public class User {
     public User() {}
 
     public User(Long userId, String userNickname, Integer userPhoneNum, String userEmail, String userPassword,
-                String userRegisterTime, Integer userRole) {
+                String userIntroduction, String userRegisterTime, Integer userRole) {
         this.userId = userId;
         this.userNickname = userNickname;
         this.userPhoneNum = userPhoneNum;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
+        this.userIntroduction = userIntroduction;
         this.userRegisterTime = userRegisterTime;
         this.userRole = userRole;
     }
@@ -27,6 +28,8 @@ public class User {
     private String userEmail;
 
     private String userPassword;
+
+    private String userIntroduction;
 
     private String userRegisterTime;
 
@@ -86,5 +89,13 @@ public class User {
 
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
+    }
+
+    public String getUserIntroduction() {
+        return userIntroduction;
+    }
+
+    public void setUserIntroduction(String userIntroduction) {
+        this.userIntroduction = userIntroduction;
     }
 }

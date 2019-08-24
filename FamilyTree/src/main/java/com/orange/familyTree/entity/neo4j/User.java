@@ -1,7 +1,5 @@
 package com.orange.familyTree.entity.neo4j;
 
-import java.util.List;
-
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
