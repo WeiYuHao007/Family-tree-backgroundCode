@@ -12,6 +12,20 @@ import com.orange.familyTree.entity.neo4j.Person;
 @Repository
 public interface PersonNeo4jRepository extends Neo4jRepository<Person, Long>{
 
+	// 查询指定节点的信息
+	@Query("MATCH (g:Genealogy)-[:OWNS]->(p:Person)" +
+			"WHERE g.name = {genealogyName} AND p.name = {personName}" +
+			"RETURN p")
+	Person findPersonByName(@Param("genealogyName") String genealogyName,
+							@Param("personName") String personName);
+
+	// 查询指定节点的第三代祖宗（null即递减）（Neo4j）
+	@Query("MATCH (g:Genealogy)-[:OWNS]->(p1:Person)\n" +
+			"WHERE g.name = {name} AND p1.name = {center}\n" +
+			"MATCH path = (p1)<-[:IS_FARTHER*1..3]-(p2:Person)\n" +
+			"RETURN last(collect(p2.name))")
+	String findForefathers(@Param("name") String genealogyName, @Param("center") String centerPersonName);
+
 	// 查询指定节点的儿子（Neo4j）
 	@Query("MATCH (g:Genealogy)-[:OWNS]->(p1:Person)<-[:IS_SON]-(p2:Person) \r\n" +
 			"WHERE g.name = {genealogyName} AND p1.name = {fartherName} \r\n" + 
@@ -48,54 +62,45 @@ public interface PersonNeo4jRepository extends Neo4jRepository<Person, Long>{
 	// 创建Person节点（Neo4j）
 	@Query("MATCH (g:Genealogy) \n" +
 			"WHERE g.name = {genealogyName} \n" +
-			"CREATE (p:Person) \n" +
-			"SET p.name = {personName} \n" +
-			"SET p.deathTime = {deathTime} \n" +
-			"SET p.birthTime = {birthTime} \n" +
-			"SET p.majorAchievements = {majorAchievements} \n" +
-			"CREATE (g)-[:OWNS]->(p:Person)")
+			"CREATE (p:Person{name: {personName}, deathTime: {deathTime}, birthTime: {birthTime}, " +
+			"majorAchievements: {majorAchievements}}) \n" +
+			"CREATE (g)-[:OWNS]->(p)")
 	void createPerson(@Param("genealogyName") String genealogyName, @Param("personName") String name,
 					  @Param("deathTime") String deathTime, @Param("birthTime") String birthTime,
 					  @Param("majorAchievements") String majorAchievements);
 
-	// 删除Person节点（Neo4j）
-	@Query("MATCH (g:Genealogy)-[:OWNS]->(p:Person)\n" +
-			"WHERE g.name = {genealogyName} AND p.name = {personName}\n" +
-			"DETACH DELETE p")
-	void deletePerson(@Param("genealogyName") String genealogyName, @Param("personName") String personName);
-
 	// 创建关系（父母 <-儿子）（Neo4j）
 	@Query("MATCH (p1:Person)<-[:OWNS]-(g:Genealogy)-[:OWNS]->(p2:Person) \n" +
 			"WHERE g.name = {genealogyName} AND p1.name = {parent} AND p2.name = {son} \n" +
-			"MERGE (p1)<-[:IS_SON{relationshipName: '儿子'}]-(p2)")
+			"CREATE (p1)<-[:IS_SON{relationshipName: '儿子'}]-(p2)")
 	void createSonRelationship(@Param("genealogyName") String genealogyName, @Param("parent") String parent,
 										@Param("son") String son);
 
 	// 创建关系（父母<-女儿）（Neo4j）
 	@Query("MATCH (p1:Person)<-[:OWNS]-(g:Genealogy)-[:OWNS]->(p2:Person) \n" +
 			"WHERE g.name = {genealogyName} AND p1.name = {parent} AND p2.name = {daughter} \n" +
-			"MERGE (p1)<-[:IS_DAUGHTER{relationshipName: '女儿'}]-(p2) \n")
+			"CREATE (p1)<-[:IS_DAUGHTER{relationshipName: '女儿'}]-(p2) \n")
 	void createDaughterRelationship(@Param("genealogyName") String genealogyName, @Param("parent") String parent,
 											 @Param("daughter") String daughter);
 
 	// 创建关系（父亲 ->儿女）（Neo4j）
 	@Query("MATCH (p1:Person)<-[:OWNS]-(g:Genealogy)-[:OWNS]->(p2:Person) \n" +
 			"WHERE g.name = {genealogyName} AND p1.name = {farther} AND p2.name = {children} \n" +
-			"MERGE (p1)-[:IS_FARTHER{relationshipName: '父亲'}]->(p2)")
+			"CREATE (p1)-[:IS_FARTHER{relationshipName: '父亲'}]->(p2)")
 	void createFartherRelationship(@Param("genealogyName") String genealogyName, @Param("farther") String farther,
 			@Param("children") String children);
 
 	// 创建关系（母亲 ->儿女）（Neo4j）
 	@Query("MATCH (p1:Person)<-[:OWNS]-(g:Genealogy)-[:OWNS]->(p2:Person) \n" +
 			"WHERE g.name = {genealogyName} AND p1.name = {mother} AND p2.name = {children} \n" +
-			"MERGE (p1)-[:IS_MOTHER{relationshipName: '母亲'}]->(p2)")
+			"CREATE (p1)-[:IS_MOTHER{relationshipName: '母亲'}]->(p2)")
 	void createMotherRelationship(@Param("genealogyName") String genealogyName, @Param("mother") String mother,
 			@Param("children") String children);
 
 	// 创建关系（丈夫<->妻子）（Neo4j）
 	@Query("MATCH (p1:Person)<-[:OWNS]-(g:Genealogy)-[:OWNS]->(p2:Person) \n" +
 			"WHERE g.name = {genealogyName} AND p1.name = {husband} AND p2.name = {wife} \n" +
-			"MERGE (p1)-[:IS_HUSBAND{relationshipName: '丈夫'}]->(p2), \n" +
+			"CREATE (p1)-[:IS_HUSBAND{relationshipName: '丈夫'}]->(p2), \n" +
 			"(p1)<-[:IS_WIFE{relationshipName: '妻子'}]-(p2)")
 	void createManToWifeRelationship(@Param("genealogyName") String genealogyName, @Param("husband") String husband,
 									 @Param("wife") String wife);
@@ -103,10 +108,26 @@ public interface PersonNeo4jRepository extends Neo4jRepository<Person, Long>{
 	// 创建关系（兄弟 <-> 兄弟）（Neo4j）
 	@Query("MATCH (p1:Person)<-[:OWNS]-(g:Genealogy)-[:OWNS]->(p2:Person)\n" +
 			"WHERE g.name = {genealogyName} AND p1.name = {firstPerson} AND p2.name = {endPerson}\n" +
-			"MERGE (p1)-[:IS_BROTHER{relationshipName: '兄弟'}]->(p2)," +
+			"CREATE (p1)-[:IS_BROTHER{relationshipName: '兄弟'}]->(p2)," +
 			"(p1)<-[:IS_BROTHER{relationshipName: '兄弟'}]-(p2)")
 	void createBrotherRelationship(@Param("genealogyName") String genealogyName, @Param("firstPerson") String firstPerson,
 								   @Param("endPerson") String endPerson);
+
+	@Query("MATCH (g:Genealogy)-[:OWNS]->(p:Person)" +
+			"WHERE g.name = {genealogyName} AND p.name = {personName}" +
+			"SET p.birthTime = {birthTime}" +
+			"SET p.deathTime = {deathTime}" +
+			"SET p.majorAchievements = {majorAchievements}")
+	// 修改节点信息
+	void changePersonInfo(@Param("genealogyName") String genealogy, @Param("personName") String personName,
+						  @Param("birthTime") String personBirthTime, @Param("deathTime") String personDeathTime,
+						  @Param("majorAchievements") String personMajorAchievements);
+
+	// 删除Person节点（Neo4j）
+	@Query("MATCH (g:Genealogy)-[:OWNS]->(p:Person)\n" +
+			"WHERE g.name = {genealogyName} AND p.name = {personName}\n" +
+			"DETACH DELETE p")
+	void deletePerson(@Param("genealogyName") String genealogyName, @Param("personName") String personName);
 
 	// 删除关系（Neo4j）
 	@Query("MATCH (p1:Person)<-[:OWNS]-(g:Genealogy)-[:OWNS]->(p2:Person), \r\n" + 

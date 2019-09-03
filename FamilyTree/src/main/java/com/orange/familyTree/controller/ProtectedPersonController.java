@@ -15,19 +15,11 @@ public class ProtectedPersonController {
 	@Autowired
 	private PersonService personService;
 
-	
 	// 增加节点
 	@PostMapping(value = "/tree/{tree-name}/node")
 	public Result addPerson(@PathVariable("tree-name") String genealogyName, 
 			@RequestBody PersonVO personVO) {
 		return personService.createPerson(genealogyName, personVO);
-	}
-	
-	// 删除节点
-	@DeleteMapping(value = "/tree/{tree-name}/node/{nodeName}")
-	public Result deletePerson(@PathVariable("tree-name") String genealogyName, 
-			@PathVariable("nodeName") String personName) {
-		return personService.deletePerson(genealogyName, personName);
 	}
 	
 	// 增加关系
@@ -36,6 +28,20 @@ public class ProtectedPersonController {
 			@RequestBody RelationshipVO relationshipVO) {
 		return personService.createRelationship(genealogyName, relationshipVO);
 	}
+
+	// 修改节点信息
+	@PutMapping(value = "/tree/{tree-name}/node-info")
+	public Result changePersonInfo(@PathVariable("tree-name") String genealogyName, @RequestBody PersonVO personVO) {
+		return personService.changePersonInfo(genealogyName, personVO);
+	}
+
+	// 删除节点
+	@DeleteMapping(value = "/tree/{tree-name}/node/{nodeName}")
+	public Result deletePerson(@PathVariable("tree-name") String genealogyName,
+							   @PathVariable("nodeName") String personName) {
+		return personService.deletePerson(genealogyName, personName);
+	}
+
 	// 删除关系
 	@DeleteMapping(value = "/tree/{tree-name}/relationship")
 	public Result deleteRelationship(@PathVariable("tree-name") String genealogyName, 

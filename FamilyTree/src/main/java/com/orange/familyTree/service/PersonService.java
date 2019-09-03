@@ -1,20 +1,17 @@
 package com.orange.familyTree.service;
 
 import com.orange.familyTree.entity.neo4j.Person;
+import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.pojo.PersonVO;
 import com.orange.familyTree.pojo.specialPojo.RelationshipVO;
 import com.orange.familyTree.pojo.util.Result;
 
 public interface PersonService {
+
+	// 查询主要图谱数据
+	Result getGenealogyMainData(String genealogyName, String centerPersonName, Integer radius) throws MyCypherException;
 	
-	// 查看指定节点的妻子与女儿
-	Result getWivesAndDaughters(String genealogyName, String personName, Integer x, Integer y, 
-			Integer radius);
-	
-	// 查看指定节点的儿子
-	Result getSons(String genealogyName, String personName, Integer x,Integer y, Integer radius);
-	
-	// 查看节点
+	// 查询节点
 	Person getPerson(String genealogyName, String personName);
 	
 	// 查询两个指定节点间的最短路径
@@ -26,7 +23,10 @@ public interface PersonService {
 	
 	// 创建节点关系
 	Result createRelationship(String genealogyName, RelationshipVO relationshipVO);
-	
+
+	// 修改节点信息
+	Result changePersonInfo(String genealogyName, PersonVO personVO) throws MyCypherException;
+
 	// 删除节点
 	Result deletePerson(String genealogyName, String personName);
 	

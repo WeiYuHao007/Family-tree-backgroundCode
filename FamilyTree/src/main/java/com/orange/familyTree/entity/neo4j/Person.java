@@ -1,6 +1,7 @@
 package com.orange.familyTree.entity.neo4j;
 
 
+import com.orange.familyTree.pojo.PersonVO;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -37,7 +38,18 @@ public class Person{
 	
 	@Property(name = "majorAchievements")
 	private String majorAchievements;
-	
+
+	public static PersonVO changeToVO(Person person) {
+		if(person != null) {
+			PersonVO personVO = new PersonVO(person.name, person.birthTime, person.deathTime,
+					person.majorAchievements);
+			return personVO;
+		}
+		else {
+			return null;
+		}
+	}
+
 	//以下为一系列get、set操作。
 	public Long getUuid() {
 		return uuid;

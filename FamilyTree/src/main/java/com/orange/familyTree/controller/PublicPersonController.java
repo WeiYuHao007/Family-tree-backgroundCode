@@ -1,5 +1,9 @@
 package com.orange.familyTree.controller;
 
+import com.orange.familyTree.entity.neo4j.Person;
+import com.orange.familyTree.pojo.PersonVO;
+import com.orange.familyTree.pojo.util.ResultFactory;
+import com.orange.familyTree.service.GenealogyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,13 +13,28 @@ import org.springframework.web.bind.annotation.RestController;
 import com.orange.familyTree.pojo.util.Result;
 import com.orange.familyTree.service.PersonService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping(value = "/api")
 public class PublicPersonController {
 	
 	@Autowired
 	private PersonService personService;
-	
+
+	@Autowired
+	private GenealogyService genealogyService;
+
+	// 获得指定图谱拥有的所有节点名称
+	@GetMapping(value = "/tree/{tree-name}/nodes")
+	public Result getPersonsByGenealogyName(@PathVariable("tree-name") String genealogyName) {
+		List<String> personNameList = genealogyService.findPersonsByGenealogyName(genealogyName);
+		return ResultFactory.buildSuccessResult(personNameList);
+	}
+
 	// 返回两个指定节点的最短路径
 	// 返回格式[[nodeNames],[relationshipNames]]
 	@GetMapping(value = "/tree/{tree-name}/node/shortestpath")
@@ -27,22 +46,20 @@ public class PublicPersonController {
 		return personService.getShortPath(genealogyName, startPersonName, endPersonName, radius);
 	}
 
-	// 获得指定节点的所有妻子与女儿节点
-	@GetMapping(value = "/tree/{tree-name}/node/{person-name}/wives-and-daughters")
-	public Result findWivesAndDaughters(
-			@PathVariable("tree-name") String genealogyName, @RequestParam("name") String personName,
-			@RequestParam("x") Integer x, @RequestParam("y") Integer y, 
-			@RequestParam("radius") Integer radius) {
-		return personService.getWivesAndDaughters(genealogyName, personName, x, y, radius);
+	// 获得图谱主要渲染数据
+	@GetMapping(value = "/tree/{tree-name}/tree-main-data")
+	public Result getGenealogyMainData(
+			@PathVariable("tree-name") String genealogyName,
+			@RequestParam("center_node") String centerPersonName, @RequestParam("radius") Integer radius){
+		return personService.getGenealogyMainData(genealogyName, centerPersonName, radius);
 	}
 
-
-	// 获得指定节点的所有儿子节点
-	@GetMapping(value = "/tree/{tree-name}/node/{person-name}/sons")
-	public Result findSons(
-			@PathVariable("tree-name") String genealogyName, @RequestParam("name") String personName,
-			@RequestParam("x") Integer x, @RequestParam("y") Integer y, 
-			@RequestParam("radius") Integer radius) {
-		return personService.getSons(genealogyName, personName, x, y, radius);
+	// 获得图谱指定节点信息
+	@GetMapping(value="/tree/{tree-name}/node")
+	public Result getPersonInfo(
+			@PathVariable("tree-name") String genealogyName, @RequestParam("name") String personName) {
+		Person person = personService.getPerson(genealogyName, personName);
+		PersonVO personVO = Person.changeToVO(person);
+		return ResultFactory.buildSuccessResult(personVO);
 	}
 }

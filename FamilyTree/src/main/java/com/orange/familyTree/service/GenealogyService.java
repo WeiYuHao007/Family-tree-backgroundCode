@@ -1,6 +1,9 @@
 package com.orange.familyTree.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.orange.familyTree.entity.neo4j.Genealogy;
 import com.orange.familyTree.entity.neo4j.Person;
@@ -16,7 +19,10 @@ public interface GenealogyService {
 	
 	// 查询用户关注的图谱
 	List<String> findAllGenealogy(Long userId) throws MyCypherException;
-	
+
+	// 查询指定图谱拥有的所有节点名称
+	List<String> findPersonsByGenealogyName (String genealogyName);
+
 	// 查询指定名称的图谱
 	Genealogy findGenealogies() throws MyCypherException;
 	

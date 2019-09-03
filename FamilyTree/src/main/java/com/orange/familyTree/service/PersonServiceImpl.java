@@ -2,6 +2,7 @@ package com.orange.familyTree.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,95 +29,121 @@ public class PersonServiceImpl implements PersonService{
 
 	@Override
 	public Person getPerson(String genealogyName, String personName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public Result getWivesAndDaughters(String genealogyName, String personName, Integer x, Integer y, 
-			Integer radius) {
 		try {
-			List<String> nodesNameList = personNeo4jRepository.findWifeAndDaughter(genealogyName,
-					personName);
-			int nodesNameListLength = nodesNameList.size();
-			if(nodesNameListLength != 0) {
-				// 将查询到的节点包装好打包成节点数组
-				ArrayList<NodeShowVO> nodes = NodeUtil.addNotSonsNodes(nodesNameList, personName, x,
-						y, radius);
-				
-				// 查询各个节点间的关系,并打包成关系数组
-				ArrayList<RelationshipVO> relationships = new ArrayList<>();
-				
-				// 将中心节点加入名称数组
-				nodesNameList.add(0, personName);
-				nodesNameListLength++;
-				
-				for(int i = 0; i < nodesNameListLength; i++) {
-					for (int j = 0; j < nodesNameListLength && i != j; j++) {
-						String relationshipName = personNeo4jRepository.findRelationship(genealogyName,
-								nodesNameList.get(i), nodesNameList.get(j));
-						RelationshipVO relationshipVO = new RelationshipVO(nodesNameList.get(i), nodesNameList.get(j),
-								relationshipName);
-						relationships.add(relationshipVO);
-					}
-				}
-
-				for(int i = nodesNameListLength - 1; i >= 0; i--) {
-					for(int j = nodesNameListLength - 1; j >= 0 && i != j; j--) {
-						String relationshipName = personNeo4jRepository.findRelationship(genealogyName,
-								nodesNameList.get(i),nodesNameList.get(j));
-						RelationshipVO relationshipVO = new RelationshipVO(nodesNameList.get(i), nodesNameList.get(j),
-								relationshipName);
-						relationships.add(relationshipVO);
-					}
-				}
-
-				Object[] data = new Object[] {nodes, relationships};
-				return ResultFactory.buildSuccessResult(data);
-			}
-			else {
-				// 没有妻子或女儿节点，故不返回任何数据
-				return null;
+			Person person = personNeo4jRepository.findPersonByName(genealogyName, personName);
+			if (person != null) {
+				return person;
+			} else {
+				throw new MyCypherException("节点信息查询失败,请检查节点是否存在。");
 			}
 		}
+		catch(MyCypherException mex) {
+			mex.printStackTrace();
+			throw new MyCypherException(mex.getMessage());
+		}
 		catch(Exception ex) {
-			// 无需返回异常，将异常压制，不向前端返回任何信息
-			return null;
+			ex.printStackTrace();
+			throw new MyCypherException("节点信息查询异常。");
 		}
 	}
 
 	@Override
-	public Result getSons(String genealogyName, String fartherName, Integer x,Integer y, Integer radius) {
-		try {
-			List<String> sonsNameList = personNeo4jRepository.findSons(genealogyName, fartherName);
-			int sonsNameListLength = sonsNameList.size();
-			if(sonsNameListLength != 0) {
-				// 将查询到的节点包装好打包成节点数组
-				ArrayList<NodeShowVO> nodes = NodeUtil.addSonsNodes(sonsNameList, fartherName, x, y, radius);
-				// 将节点间的关系包装好并打包成关系数组
-				ArrayList<RelationshipVO> relationships = new ArrayList<>();
-				for(int i = 0; i < sonsNameList.size(); i++) {
-					String sons = "儿子";
-					RelationshipVO sonRelationship = new RelationshipVO(sonsNameList.get(i), fartherName,
-							sons);
-					relationships.add(sonRelationship);
-					String farther = "父亲";
-					RelationshipVO fartherRelationship = new RelationshipVO(fartherName, 
-							sonsNameList.get(i), farther);
-					relationships.add(fartherRelationship);
+	public Result getGenealogyMainData(String genealogyName, String centerNodeName, Integer radius) throws MyCypherException{
+		try{
+			String startPersonName = personNeo4jRepository.findForefathers(genealogyName, centerNodeName);
+			NodeShowVO startNodeShowVO = new NodeShowVO(startPersonName, 0, 0);
+			// 渲染节点列表
+			ArrayList<NodeShowVO> nodeShowVOs = new ArrayList<>();
+			nodeShowVOs.add(startNodeShowVO);
+			// 关系列表
+			ArrayList<RelationshipVO> relationshipVOs = new ArrayList<>();
+			// 中心节点列表
+			ArrayList<NodeShowVO> centerNodes = new ArrayList<>();
+			centerNodes.add(startNodeShowVO);
+
+			int iterationsNum = 6;
+
+			// 填充渲染节点列表(迭代中心节点)
+			while(!centerNodes.isEmpty() && iterationsNum != 0) {
+				int centerNodesLength = centerNodes.size();
+				ArrayList<NodeShowVO> tempCenterNodes = new ArrayList<>();
+
+				for(int i = 0; i < centerNodesLength; i++) {
+					// 中心节点数据
+					String tempCenterNodeName = centerNodes.get(i).getName();
+					Integer tempCenterNodeX = centerNodes.get(i).getX();
+					Integer tempCenterNodeY = centerNodes.get(i).getY();
+
+					// 查询该节点的儿子节点
+					List<String> sonsNameList = personNeo4jRepository.findSons(genealogyName,
+							centerNodes.get(i).getName());
+					// 包装儿子节点
+					int sonsNameListLength = sonsNameList.size();
+					if (sonsNameListLength != 0) {
+						// 将查询到的节点包装好打包成节点数组
+						ArrayList<NodeShowVO> sonsNodes = NodeUtil.addSonsNodes(sonsNameList,
+								tempCenterNodeName, tempCenterNodeX, tempCenterNodeY, radius);
+
+						int sonsNodesLength = sonsNodes.size();
+						for(int j = 0; j < sonsNodesLength; j++) {
+							// 将包装好的数组添加到渲染节点列表
+							nodeShowVOs.add(sonsNodes.get(j));
+							// 将包装好的数组添加到临时中心节点列表
+							tempCenterNodes.add(sonsNodes.get(j));
+						}
+					}
+
+					// 查询该节点的女儿与妻子
+					List<String> wifeAndDaughterNameList = personNeo4jRepository.findWifeAndDaughter(genealogyName,
+							tempCenterNodeName);
+					// 包装妻子与女儿节点
+					int wifeAndDaughterNameListLength = wifeAndDaughterNameList.size();
+					if (wifeAndDaughterNameListLength != 0) {
+						// 将查询到的节点包装好打包成节点数组
+						ArrayList<NodeShowVO> wifeAndDaughterNodes = NodeUtil.addNotSonsNodes(wifeAndDaughterNameList,
+								tempCenterNodeName, tempCenterNodeX, tempCenterNodeY, radius);
+						int wifeAndDaughterNodesLength = wifeAndDaughterNodes.size();
+						// 将包装好的数组添加到渲染节点列表
+						for(int j = 0; j < wifeAndDaughterNodesLength; j++) {
+							nodeShowVOs.add(wifeAndDaughterNodes.get(j));
+						}
+					}
 				}
-				// 成功返回
-				Object[] data = new Object[] {nodes, relationships};
-				return ResultFactory.buildSuccessResult(data);
+				// 替换中心节点数组
+				centerNodes = tempCenterNodes;
+				// 更新半径
+				radius *= 2;
+				// 迭代次数减一
+				iterationsNum--;
+
 			}
-			else {
-				// 查询无结果此节点没有儿子，不返回任何数据
-				return ResultFactory.buildSuccessResult("该节点无已知的子节点。");
+
+			// 填充关系列表
+			int nodeShowVOsLength = nodeShowVOs.size();
+			for(int i = 0; i < nodeShowVOsLength; i++) {
+				for (int j = 0; j < nodeShowVOsLength && i != j; j++) {
+					String positiveRelationshipName = personNeo4jRepository.findRelationship(genealogyName,
+							nodeShowVOs.get(i).getName(), nodeShowVOs.get(j).getName());
+					if(positiveRelationshipName != null) {
+						RelationshipVO positiveRelationshipVO = new RelationshipVO(nodeShowVOs.get(i).getName(),
+								nodeShowVOs.get(j).getName(), positiveRelationshipName);
+						relationshipVOs.add(positiveRelationshipVO);
+					}
+					String reverseRelationshipName = personNeo4jRepository.findRelationship(genealogyName,
+							nodeShowVOs.get(j).getName(), nodeShowVOs.get(i).getName());
+					if(reverseRelationshipName != null) {
+						RelationshipVO reverseRelationshipVO = new RelationshipVO(nodeShowVOs.get(j).getName(),
+								nodeShowVOs.get(i).getName(), reverseRelationshipName);
+						relationshipVOs.add(reverseRelationshipVO);
+					}
+				}
 			}
+			Object[] data = new Object[] {nodeShowVOs, relationshipVOs, centerNodes};
+			return ResultFactory.buildSuccessResult(data);
 		}
 		catch(Exception ex) {
-			// 无需返回异常，将异常压制，不向前端返回任何信息
-			return null;
+			ex.printStackTrace();
+			throw new MyCypherException("获取图谱主要显示数据失败");
 		}
 	}
 
@@ -177,41 +204,41 @@ public class PersonServiceImpl implements PersonService{
 					relationshipVO.getTarget());
 			if (existRelationshipName == null || existRelationshipName == "") {
 				String relationshipName = relationshipVO.getRelationshipName();
-				if (relationshipName == "父亲") {
+				if (relationshipName.equals("父亲")) {
 					personNeo4jRepository.createSonRelationship(genealogyName, 
 							relationshipVO.getSource(), relationshipVO.getTarget());
 					personNeo4jRepository.createFartherRelationship(genealogyName, 
 							relationshipVO.getSource(), relationshipVO.getTarget());
 					
 				}
-				if (relationshipName == "母亲") {
+				if (relationshipName.equals("母亲")) {
 					personNeo4jRepository.createSonRelationship(genealogyName, 
 							relationshipVO.getSource(), relationshipVO.getTarget());
 					personNeo4jRepository.createMotherRelationship(genealogyName, 
 							relationshipVO.getSource(), relationshipVO.getTarget());
 					
 				}
-				if (relationshipName == "儿子") {
+				if (relationshipName.equals("儿子")) {
 					personNeo4jRepository.createSonRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
 					personNeo4jRepository.createFartherRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
 				}
-				if (relationshipName == "女儿") {
+				if (relationshipName.equals("女儿")) {
 					personNeo4jRepository.createDaughterRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
 					personNeo4jRepository.createFartherRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
 				}
-				if (relationshipName == "兄弟") {
+				if (relationshipName.equals("兄弟")) {
 					personNeo4jRepository.createBrotherRelationship(genealogyName, 
 							relationshipVO.getSource(), relationshipVO.getTarget());
 				}
-				if (relationshipName == "丈夫") {
+				if (relationshipName.equals("丈夫")) {
 					personNeo4jRepository.createManToWifeRelationship(genealogyName, 
 							relationshipVO.getSource(), relationshipVO.getTarget());
 				}
-				if (relationshipName == "妻子") {
+				if (relationshipName.equals("妻子")) {
 					personNeo4jRepository.createManToWifeRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
 				}
@@ -221,9 +248,25 @@ public class PersonServiceImpl implements PersonService{
 				throw new MyCypherException("关系已存在，请删除后再添加。");
 			}
 		}
+		catch (MyCypherException myEx) {
+			throw new MyCypherException(myEx.getMessage());
+		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 			throw new MyCypherException("关系创建失败。");
+		}
+	}
+
+	@Override
+	public Result changePersonInfo(String genealogyName, PersonVO personVO) throws MyCypherException{
+		try {
+			personNeo4jRepository.changePersonInfo(genealogyName, personVO.getName(), personVO.getBirthTime(),
+					personVO.getDeathTime(), personVO.getMajorAchievements());
+			return ResultFactory.buildSuccessResult("修改成功。");
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MyCypherException("修改失败。");
 		}
 	}
 

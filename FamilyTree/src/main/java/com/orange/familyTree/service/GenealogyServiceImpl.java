@@ -1,7 +1,11 @@
 package com.orange.familyTree.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.orange.familyTree.dao.neo4j.PersonNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +45,18 @@ public class GenealogyServiceImpl implements GenealogyService {
 		}
 		catch(Exception ex){
 			throw new MyCypherException("读取关注图谱异常。");
+		}
+	}
+
+	@Override
+	public List<String> findPersonsByGenealogyName(String genealogyName) {
+		try {
+			List<String> nameList = genealogyNeo4jRepository.findPersonsByGenealogyName(genealogyName);
+			return nameList;
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MyCypherException("指定图谱所拥有的节点姓名查询异常。");
 		}
 	}
 

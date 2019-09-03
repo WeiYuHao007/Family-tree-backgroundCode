@@ -11,7 +11,13 @@ import com.orange.familyTree.entity.neo4j.Genealogy;
 
 @Repository
 public interface GenealogyNeo4jRepository extends Neo4jRepository<Genealogy, Long>{
-	
+
+	// 查询指定图谱拥有的节点名称（Neo4j）
+	@Query("MATCH (g:Genealogy)-[:OWNS]->(p:Person)" +
+			"WHERE g.name = {genealogyName}" +
+			"RETURN p.name")
+	List<String> findPersonsByGenealogyName(@Param("genealogyName") String genealogyName);
+
 	// 查询指定用户关注的所有族谱（Neo4j）
 	@Query("MATCH (u:User)-[r:FOCUS_ON]-(g:Genealogy) \n" +
 			"WHERE u.userId = {userId} AND r.show = true \n" +
@@ -24,6 +30,7 @@ public interface GenealogyNeo4jRepository extends Neo4jRepository<Genealogy, Lon
 			"RETURN u.userId")
 	List<Long> findGenealogyFollowersByName(@Param("name") String genealogyName);
 
+	// 通过图谱名称查询指定图谱的管理员ID
 	@Query("MATCH (u:User)-[r:FOCUS_ON]-(g:Genealogy) \n" +
 			"WHERE g.name = {name} AND r.show = true  AND r.admin = true \n" +
 			"RETURN u.userId")
