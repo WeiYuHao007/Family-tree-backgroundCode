@@ -1,8 +1,11 @@
 package com.orange.familyTree.dao.mysql;
 
-import com.orange.familyTree.entity.mysql.User;
+import com.orange.familyTree.entity.mysql.UserMySQL;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public interface UserMySQLRepository {
@@ -12,17 +15,29 @@ public interface UserMySQLRepository {
                              @Param("email") String userEmail, @Param("password") String password);
 
     // 通过用户ID查找用户（MySQL）
-    User findUserById(@Param("id") Long userId);
+    UserMySQL findUserById(@Param("id") Long userId);
 
     // 通过电话号码查找用户（MySQL）
-    User findUserByPhoneNumAndPassword(@Param("phoneNum") Integer phoneNum, @Param("password") String password);
+    UserMySQL findUserByPhoneNumAndPassword(@Param("phoneNum") Integer phoneNum, @Param("password") String password);
 
     // 通过邮箱查找用户（MySQL）
-    User findUserByEmailAndPassword(@Param("email") String email, @Param("password") String password);
+    UserMySQL findUserByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 
     // 通过用户昵称查找用户（MySQL）
-    User findUserByNickName(@Param("nickname") String nickname);
+    UserMySQL findUserByNickName(@Param("nickname") String nickname);
+
+    // 通过用户id查找用户昵称（MySQL）
+    String findUserNicknameById(@Param("id") Long userId);
+
+    List<String> findUsersNicknameByIds(@Param("ids") List<Long> userIds);
+
+    // 查找用户id通过用户昵称（MySQL）
+    Long findUserIdByNickname(@Param("nickname") String userNickname);
 
     // 销毁用户（MySQL）
     void destroyUserById(@Param("id") Long userId);
+
+    // 修改密码（MySQL）
+    void changePassword(@Param("id") Long userId, @Param("oldPassword") String oldPassword,
+                        @Param("newPassword") String newPassword);
 }

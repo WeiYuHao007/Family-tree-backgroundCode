@@ -3,12 +3,12 @@ package com.orange.familyTree.entity.mysql;
 import org.apache.ibatis.type.Alias;
 
 @Alias(value = "user")
-public class User {
+public class UserMySQL {
 
-    public User() {}
+    public UserMySQL() {}
 
-    public User(Long userId, String userNickname, Integer userPhoneNum, String userEmail, String userPassword,
-                String userIntroduction, String userRegisterTime, Integer userRole) {
+    public UserMySQL(Long userId, String userNickname, Integer userPhoneNum, String userEmail, String userPassword,
+                     String userIntroduction, String userRegisterTime, Integer userRole) {
         this.userId = userId;
         this.userNickname = userNickname;
         this.userPhoneNum = userPhoneNum;

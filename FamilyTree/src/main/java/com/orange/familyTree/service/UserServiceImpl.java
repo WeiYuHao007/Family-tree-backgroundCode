@@ -1,8 +1,14 @@
 package com.orange.familyTree.service;
 
+import com.orange.familyTree.dao.mysql.GenealogyFocusApplicationMySQLRepository;
+import com.orange.familyTree.dao.mysql.GenealogyMySQLRepository;
+import com.orange.familyTree.dao.mysql.GenealogyUpdateRecordMySQLRepository;
 import com.orange.familyTree.dao.mysql.UserMySQLRepository;
-import com.orange.familyTree.entity.mysql.User;
+import com.orange.familyTree.dao.neo4j.UserNeo4jRepository;
+import com.orange.familyTree.entity.mysql.GenealogyUpdateRecord;
+import com.orange.familyTree.entity.mysql.UserMySQL;
 import com.orange.familyTree.exceptions.MySQLException;
+import com.orange.familyTree.pojo.GenealogyUpdateRecordVO;
 import com.orange.familyTree.pojo.specialPojo.RegisterVO;
 import com.orange.familyTree.pojo.UserDO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.pojo.specialPojo.LoginVO;
 
+import java.util.ArrayList;
+
 
 @Service
 @Transactional
@@ -20,6 +28,17 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserMySQLRepository userMySQLRepository;
 
+	@Autowired
+	private UserNeo4jRepository userNeo4jRepository;
+
+	@Autowired
+	private GenealogyUpdateRecordMySQLRepository genealogyUpdateRecordMySQLRepository;
+
+	@Autowired
+	private GenealogyFocusApplicationMySQLRepository genealogyFocusApplicationMySQLRepository;
+
+	@Autowired
+	private GenealogyMySQLRepository genealogyMySQLRepository;
 
 	// 登入账号
 	@Override
@@ -27,13 +46,16 @@ public class UserServiceImpl implements UserService {
 		try {
 			if(loginVO.getPhoneNum() != null) {
 				// 通过电话号码登入
-				User user = userMySQLRepository.findUserByPhoneNumAndPassword(loginVO.getPhoneNum(), loginVO.getPassword());
-				UserDO userDetail = UserDO.changeEToDO(user);
-				return userDetail;
+				UserMySQL userMySQL = userMySQLRepository.findUserByPhoneNumAndPassword(loginVO.getPhoneNum(), loginVO.getPassword());
+				if(userMySQL.getUserId() != null) {
+					UserDO userDetail = UserDO.changeEToDO(userMySQL);
+					return userDetail;
+				}
+				throw new MySQLException();
 			}
 			else {
-				User user = userMySQLRepository.findUserByEmailAndPassword(loginVO.getEmail(), loginVO.getPassword());
-				UserDO userDetail = UserDO.changeEToDO(user);
+				UserMySQL userMySQL = userMySQLRepository.findUserByEmailAndPassword(loginVO.getEmail(), loginVO.getPassword());
+				UserDO userDetail = UserDO.changeEToDO(userMySQL);
 				return userDetail;
 			}
 		}
@@ -48,8 +70,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDO getUserById(Long userId) throws MySQLException {
 		try {
-			User user = userMySQLRepository.findUserById(userId);
-			UserDO userDO = UserDO.changeEToDO(user);
+			UserMySQL userMySQL = userMySQLRepository.findUserById(userId);
+			UserDO userDO = UserDO.changeEToDO(userMySQL);
 			return userDO;
 		}
 		catch(Exception ex) {
@@ -62,8 +84,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDO getUserByNickname(String userNickname) throws MySQLException {
 		try {
-			User user = userMySQLRepository.findUserByNickName(userNickname);
-			UserDO userDO = UserDO.changeEToDO(user);
+			UserMySQL userMySQL = userMySQLRepository.findUserByNickName(userNickname);
+			UserDO userDO = UserDO.changeEToDO(userMySQL);
 			return userDO;
 		}
 		catch(Exception ex) {
@@ -87,9 +109,56 @@ public class UserServiceImpl implements UserService {
 
 	// 更改密码
 	@Override
-	public void changePassword(LoginVO accountViewDetail) throws MyCypherException {
-		// TODO Auto-generated method stub
-		
+	public void changePassword(Long userId, String oldPassword, String newPassword) throws MySQLException {
+		// 验证原账户身份
+		// 更改密码
+		try {
+			userMySQLRepository.changePassword(userId, oldPassword, newPassword);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MySQLException("更改密码异常。");
+		}
+	}
+
+	// 获得用户关注的所有图谱的更新动态
+	@Override
+	public ArrayList<GenealogyUpdateRecordVO> getGenealogyUpdateRecord(Long userId) throws MySQLException {
+		// 获得用户id
+		// 在图数据库中查询用户关注的所有图谱的id
+		try {
+			ArrayList<Long> genealogiesId = userNeo4jRepository.findAllFocusGenealogy(userId);
+			// 在updateRecord表中获得更新动态
+			ArrayList<GenealogyUpdateRecord> updateRecords =
+					genealogyUpdateRecordMySQLRepository.findUpdateRecordByGenealogiesId(genealogiesId);
+			int updateRecordsLength = updateRecords.size();
+			ArrayList<GenealogyUpdateRecordVO> updateRecordVOs= new ArrayList<>();
+			for(int i = 0; i < updateRecordsLength; i++) {
+				updateRecordVOs.add(GenealogyUpdateRecord.changeToVO(updateRecords.get(i)));
+			}
+			return updateRecordVOs;
+		}
+		catch(Exception ex) {
+			throw new MySQLException("获得用户关注的所有图谱的更新动态异常。");
+		}
+	}
+
+	// 申请关注指定图谱
+	@Override
+	public void applyForGenealogy(String genealogyName, String userNickname, String applicationComment) throws MySQLException {
+		// 查询图谱与用户ID
+		// 在focusApplication表中登记
+		// 在Neo4j中创建关注状态
+		try {
+			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
+			Long userId = userMySQLRepository.findUserIdByNickname(userNickname);
+			genealogyFocusApplicationMySQLRepository.createApplication(genealogyId, userId, applicationComment);
+			userNeo4jRepository.applyForFocusOnGenealogy(genealogyId, userId);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MySQLException("申请关注指定图谱异常。");
+		}
 	}
 
 }

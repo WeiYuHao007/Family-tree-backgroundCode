@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.orange.familyTree.dao.mysql.GenealogyFocusApplicationMySQLRepository">
+    <select id="findApplicationByGenealogyId" resultType="GenealogyFocusApplication">
+        SELECT *
+        FROM genealogy_focus_application
+        WHERE genealogyId = #{id}
+    </select>
+    <select id="findApplicationByUserId" resultMap="GenealogyFocusApplication">
+        SELECT *
+        FROM genealogy_focus_application
+        WHERE userId = #{id}
+    </select>
+    <select id="createApplication">
+        INSERT INTO genealogy_focus_application(genealogyId, userId, applicationComment)
+        VALUES (#{genealogyId}, #{userId}, #{comment});
+    </select>
+    <select id="deleteApplication">
+        DELETE FROM genealogy_focus_application
+        WHERE genealogyId = #{genealogyId} AND userId = #{userId}
+    </select>
+</mapper>

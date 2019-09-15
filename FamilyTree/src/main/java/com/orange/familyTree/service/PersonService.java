@@ -9,7 +9,7 @@ import com.orange.familyTree.pojo.util.Result;
 public interface PersonService {
 
 	// 查询主要图谱数据
-	Result getGenealogyMainData(String genealogyName, String centerPersonName, Integer radius) throws MyCypherException;
+	Result getMainPersonData(String genealogyName, String centerPersonName, Integer radius) throws MyCypherException;
 	
 	// 查询节点
 	Person getPerson(String genealogyName, String personName);

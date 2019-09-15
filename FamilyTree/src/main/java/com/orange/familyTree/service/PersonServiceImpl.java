@@ -1,9 +1,12 @@
 package com.orange.familyTree.service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.orange.familyTree.dao.mysql.GenealogyUpdateRecordMySQLRepository;
+import com.orange.familyTree.pojo.util.UpdateRecordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,12 @@ public class PersonServiceImpl implements PersonService{
 	@Autowired
 	private PersonNeo4jRepository personNeo4jRepository;
 
+	@Autowired
+	private GenealogyUpdateRecordMySQLRepository genealogyUpdateRecordMySQLRepository;
+
+	@Autowired
+	private GenealogyMySQLRepository genealogyMySQLRepository;
+
 	@Override
 	public Person getPerson(String genealogyName, String personName) {
 		try {
@@ -48,7 +57,7 @@ public class PersonServiceImpl implements PersonService{
 	}
 
 	@Override
-	public Result getGenealogyMainData(String genealogyName, String centerNodeName, Integer radius) throws MyCypherException{
+	public Result getMainPersonData(String genealogyName, String centerNodeName, Integer radius) throws MyCypherException{
 		try{
 			String startPersonName = personNeo4jRepository.findForefathers(genealogyName, centerNodeName);
 			NodeShowVO startNodeShowVO = new NodeShowVO(startPersonName, 0, 0);
@@ -200,6 +209,7 @@ public class PersonServiceImpl implements PersonService{
 	@Override
 	public Result createRelationship(String genealogyName, RelationshipVO relationshipVO) {
 		try {
+			// 不存在的人查出来的关系也不存在
 			String existRelationshipName = personNeo4jRepository.findRelationship(genealogyName, relationshipVO.getSource(), 
 					relationshipVO.getTarget());
 			if (existRelationshipName == null || existRelationshipName == "") {
@@ -221,12 +231,14 @@ public class PersonServiceImpl implements PersonService{
 				if (relationshipName.equals("儿子")) {
 					personNeo4jRepository.createSonRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
+					// 有异意
 					personNeo4jRepository.createFartherRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
 				}
 				if (relationshipName.equals("女儿")) {
 					personNeo4jRepository.createDaughterRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
+					// 有异意
 					personNeo4jRepository.createFartherRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
 				}
@@ -262,6 +274,11 @@ public class PersonServiceImpl implements PersonService{
 		try {
 			personNeo4jRepository.changePersonInfo(genealogyName, personVO.getName(), personVO.getBirthTime(),
 					personVO.getDeathTime(), personVO.getMajorAchievements());
+			Timestamp time = UpdateRecordUtil.getNowTimestamp();
+			String remark = UpdateRecordUtil.createUpdateRemark(genealogyName, personVO.getName(), time);
+			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
+			genealogyUpdateRecordMySQLRepository.createUpdateRecord(genealogyId, "修改了一个节点的信息。",
+					time, remark);
 			return ResultFactory.buildSuccessResult("修改成功。");
 		}
 		catch(Exception ex) {

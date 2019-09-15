@@ -3,15 +3,42 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.orange.familyTree.dao.mysql.GenealogyMySQLRepository">
-    <select id="findGenealogyById" resultType="genealogy">
+    <select id="getGenealogyDefaultCenterPerson" resultType="String">
+        SELECT genealogyDefaultCenterPerson
+        FROM genealogy
+        WHERE genealogyName = #{name};
+    </select>
+    <select id="findGenealogyById" resultType="Genealogy">
         SELECT *
         FROM genealogy
         WHERE genealogyId = #{id};
+    </select>
+    <select id="findGenealogyNameById" resultType="String">
+        SELECT genealogyName
+        FROM genealogy
+        WHERE genealogyId = #{id};
+    </select>
+    <select id="findGenealogyByName" resultType="Genealogy">
+        SELECT *
+        FROM genealogy
+        WHERE genealogyName = #{name};
+    </select>
+    <select id="findGenealogyAdminByName" resultType="String">
+        SELECT genealogyAdmin
+        FROM genealogy
+        WHERE genealogyName = #{name};
     </select>
     <select id="findGenealogyIdByName" resultType="Long">
         SELECT genealogyId
         FROM genealogy
         WHERE genealogyName = #{name};
+    </select>
+    <select id="keywordSearchGenealogy" resultType="ArrayList">
+        SELECT *
+        FROM genealogy
+        WHERE genealogyName LIKE #{keyword}
+        ORDER BY genealogyName
+        LIMIT #{start}, 5;
     </select>
     <select id="createGenealogy">
         INSERT INTO genealogy(genealogyName, genealogyAdmin, genealogyDescription)
@@ -21,14 +48,24 @@
         DELETE FROM genealogy
         WHERE genealogyId = #{id};
     </select>
-    <select id="changeGenealogyName">
+    <select id="changeGenealogyNameById">
         UPDATE genealogy
         SET genealogyName = #{name}
         WHERE genealogyId = #{id};
     </select>
+    <select id="changeGenealogyNameByName">
+        UPDATE genealogy
+        SET genealogyName = #{newName}
+        WHERE genealogyName = #{oldName};
+    </select>
     <select id="changeGenealogyDescription">
         UPDATE genealogy
         SET genealogyDescription = #{description}
+        WHERE genealogyId = #{id};
+    </select>
+    <select id="changeDefaultCenterPerson">
+        UPDATE genealogy
+        SET genealogyDefaultCenterPerson = #{centerPerson}
         WHERE genealogyId = #{id};
     </select>
     <select id="changeGenealogyAdmin">

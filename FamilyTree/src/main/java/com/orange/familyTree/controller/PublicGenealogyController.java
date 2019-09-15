@@ -1,15 +1,15 @@
 package com.orange.familyTree.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.orange.familyTree.entity.mysql.GenealogyMySQL;
+import com.orange.familyTree.exceptions.MySQLException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.orange.familyTree.pojo.util.Result;
 import com.orange.familyTree.pojo.util.ResultFactory;
@@ -18,7 +18,9 @@ import com.orange.familyTree.service.GenealogyService;
 @RestController
 @RequestMapping(value = "/api")
 public class PublicGenealogyController {
-	
+
+	// 权限条件：无
+
 	@Autowired
 	private GenealogyService genealogyService;
 
@@ -30,12 +32,13 @@ public class PublicGenealogyController {
 		List<String> nameList = genealogyService.findAllGenealogy(userId);
 		return ResultFactory.buildSuccessResult(nameList);
 	}
-
-	// 获得图谱的所有关注者
-	@GetMapping(value="/tree/{tree-name}/followers")
-	public Result findFollowersByGenealogyName(@PathVariable("tree-name") String genealogyName) {
-		return null;
-	}
 	
+	// 关键词搜索图谱（显示图谱的不敏感信息）
+	@GetMapping(value = "/trees/info")
+	public Result keywordSearch(HttpServletRequest request, @RequestParam("keyword") String keyword,
+								@RequestParam("pageNum") Integer pageNum) throws MySQLException {
+		ArrayList<GenealogyMySQL> genealogiesList= genealogyService.keywordSearch(keyword, pageNum);
+		return ResultFactory.buildSuccessResult(genealogiesList);
+	}
 
 }

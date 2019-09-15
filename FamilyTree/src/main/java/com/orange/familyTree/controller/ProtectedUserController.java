@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.orange.familyTree.exceptions.MySQLException;
+import com.orange.familyTree.pojo.GenealogyUpdateRecordVO;
 import com.orange.familyTree.pojo.UserDO;
 import com.orange.familyTree.pojo.UserVO;
 import com.orange.familyTree.pojo.specialPojo.UserShowVO;
@@ -17,14 +18,17 @@ import com.orange.familyTree.pojo.util.Result;
 import com.orange.familyTree.pojo.util.ResultFactory;
 import com.orange.familyTree.service.UserService;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping(value = "/api")
 public class ProtectedUserController {
+
+	// 权限条件：处于登录状态
 	
 	@Autowired
 	private UserService userService;
-	
-	
+
 	// 注销账号
 	@DeleteMapping(value = "/user/status")
 	public Result logOut(HttpServletRequest request, HttpServletResponse response) {
@@ -55,5 +59,26 @@ public class ProtectedUserController {
 			UserShowVO userShow = UserDO.changeToShow(userDO);
 			return ResultFactory.buildSuccessResult(userShow);
 		}
+	}
+
+	// 获得用户关注的所有图谱的更新动态
+	@GetMapping(value = "/user/focus-trees/update-record")
+	public Result getAllGenealogyUpdateRecord(HttpServletRequest request) throws MySQLException {
+		HttpSession session = request.getSession(false);
+		Long userId = (Long) session.getAttribute("SESSION_USERID");
+		ArrayList<GenealogyUpdateRecordVO> updateRecordsVO = userService.getGenealogyUpdateRecord(userId);
+		return ResultFactory.buildSuccessResult(updateRecordsVO);
+	}
+
+	// 申请关注指定图谱
+	@PostMapping(value = "/tree/{tree-name}/application")
+	public Result applyForGenealogy(@PathVariable("tree-name") String genealogyName, HttpServletRequest request,
+									@RequestBody String applicationComment)
+			throws MySQLException {
+		HttpSession session = request.getSession(false);
+		Long userId = (Long) session.getAttribute("SESSION_USERID");
+		UserDO userDO = userService.getUserById(userId);
+		userService.applyForGenealogy(genealogyName, userDO.getUserNickname(), applicationComment);
+		return ResultFactory.buildSuccessResult("申请成功。");
 	}
 }

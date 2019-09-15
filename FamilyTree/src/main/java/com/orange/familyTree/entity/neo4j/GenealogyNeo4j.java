@@ -6,12 +6,12 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 
 
-@NodeEntity(label="Genealogy")
-public class Genealogy {
+@NodeEntity(label="GenealogyMySQL")
+public class GenealogyNeo4j {
 
-	public Genealogy() {}
+	public GenealogyNeo4j() {}
 
-	public Genealogy(Long uuid, Long genealogyId, String name) {
+	public GenealogyNeo4j(Long uuid, Long genealogyId, String name) {
 		super();
 		this.uuid = uuid;
 		this.genealogyId = genealogyId;

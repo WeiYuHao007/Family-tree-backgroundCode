@@ -1,6 +1,6 @@
 package com.orange.familyTree.pojo;
 
-import com.orange.familyTree.entity.mysql.User;
+import com.orange.familyTree.entity.mysql.UserMySQL;
 import com.orange.familyTree.pojo.specialPojo.UserShowVO;
 
 public class UserDO {
@@ -35,16 +35,16 @@ public class UserDO {
 
     private Integer userRoleNum;
 
-    public static UserDO changeEToDO(User user) {
+    public static UserDO changeEToDO(UserMySQL userMySQL) {
 
-        Long userId = user.getUserId();
-        String userNickname = user.getUserNickname();
-        Integer userPhoneNum = user.getUserPhoneNum();
-        String userEmail = user.getUserEmail();
-        String userPassword = user.getUserPassword();
-        String userIntroduction = user.getUserIntroduction();
-        String userRegisterTime = user.getUserRegisterTime();
-        Integer userRoleNum = user.getUserRole();
+        Long userId = userMySQL.getUserId();
+        String userNickname = userMySQL.getUserNickname();
+        Integer userPhoneNum = userMySQL.getUserPhoneNum();
+        String userEmail = userMySQL.getUserEmail();
+        String userPassword = userMySQL.getUserPassword();
+        String userIntroduction = userMySQL.getUserIntroduction();
+        String userRegisterTime = userMySQL.getUserRegisterTime();
+        Integer userRoleNum = userMySQL.getUserRole();
         UserDO userDO = new UserDO(userId, userNickname, userPhoneNum, userEmail, userPassword, userIntroduction,
                 userRegisterTime, userRoleNum);
         return userDO;

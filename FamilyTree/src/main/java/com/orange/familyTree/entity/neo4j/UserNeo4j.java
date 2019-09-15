@@ -6,12 +6,12 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 
 
-@NodeEntity(label="User")
-public class User {
+@NodeEntity(label="UserNeo4j")
+public class UserNeo4j {
 
-	public User() {}
+	public UserNeo4j() {}
 
-	public User(Long uuid, Long userId) {
+	public UserNeo4j(Long uuid, Long userId) {
 		this.uuid = uuid;
 		this.userId = userId;
 	}

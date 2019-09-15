@@ -7,25 +7,49 @@
         INSERT INTO user(userNickname, userPhoneNum, userEmail, userPassword, userRegisterTime, userRole)
         VALUES (#{name}, #{phoneNum}, #{email}, #{password}, now(), 2);
     </select>
-    <select id="findUserById" resultType="user">
+    <select id="findUserById" resultType="userMySQL">
         SELECT *
         FROM user
         WHERE userId = #{id};
     </select>
-    <select id="findUserByPhoneNumAndPassword" resultType="user">
+    <select id="findUserByPhoneNumAndPassword" resultType="userMySQL">
         SELECT *
         FROM user
         WHERE userPhoneNum = #{phoneNum} AND userPassword = #{password};
     </select>
-    <select id="findUserByEmailAndPassword" resultType="user">
+    <select id="findUserByEmailAndPassword" resultType="userMySQL">
         SELECT *
         FROM user
         WHERE userEmail = #{email} AND userPassword = #{password};
     </select>
-    <select id="findUserByNickName" resultType="user">
+    <select id="findUserByNickName" resultType="userMySQL">
         SELECT *
         FROM user
         WHERE userNickname =#{nickname}
+    </select>
+    <select id="findUserNicknameById" resultType="String">
+        SELECT userNickname
+        FROM user
+        WHERE userId in
+        <foreach collection="list" item="Long" index="index"
+            open="(" close=")" separator=",">
+            #{ids}
+        </foreach>
+    </select>
+    <select id="findUsersNicknameByIds" resultType="ArrayList">
+        SELECT userNickname
+        FROM user
+        WHERE userId =#{id}
+    </select>
+    <select id="findUserIdByNickname" resultType="Long">
+        SELECT userId
+        FROM user
+        WHERE userNickname = #{nickname}
+    </select>
+    <select id="changePassword">
+        UPDATE user
+        SET userPassword = #{newPassword}
+        WHERE userId = #{id} AND userPassword = #{oldPassword};
     </select>
     <select id="destroyUserById">
         DELETE FROM user

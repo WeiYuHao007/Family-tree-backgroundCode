@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import com.orange.familyTree.exceptions.MySQLException;
 import com.orange.familyTree.pojo.*;
+import com.orange.familyTree.pojo.specialPojo.ChangePasswordVO;
 import com.orange.familyTree.pojo.specialPojo.LoginVO;
 import com.orange.familyTree.pojo.specialPojo.RegisterVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,31 @@ import com.orange.familyTree.service.UserService;
 @RestController
 @RequestMapping(value = "/api")
 public class PublicUserController {
+	// 权限条件：无
 
 	@Autowired
 	private UserService userService;
+
+
+	// 获取用户头像
+
+	// 获取登录账号的昵称
+	@GetMapping(value= "/user/nickname")
+	public Result getNickName(HttpServletRequest request) {
+		try {
+			HttpSession session = request.getSession(false);
+			if(session == null) {
+				return null;
+			}
+			Long userId = (Long) session.getAttribute("SESSION_USERID");
+			UserDO userDO = userService.getUserById(userId);
+			return ResultFactory.buildSuccessResult("请求成功", userDO.getUserNickname());
+		}
+		catch (MySQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
 
 	// 用户登入
 	@PostMapping(value="/user/status")
@@ -45,26 +68,12 @@ public class PublicUserController {
 		return ResultFactory.buildSuccessResult("注册成功。");
 	}
 
-	// 获取登录账号的昵称
-	@GetMapping(value= "/user/nickname")
-	public Result getNickName(HttpServletRequest request) {
-		try {
-		HttpSession session = request.getSession(false);
-		if(session == null) {
-			return null;
-		}
-		Long userId = (Long) session.getAttribute("SESSION_USERID");
-		UserDO userDO = userService.getUserById(userId);
-		return ResultFactory.buildSuccessResult("请求成功", userDO.getUserNickname());
-		}
-		catch (MySQLException ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
 
+	// 修改密码
 	@PatchMapping(value = "/user/password")
-	public Result retrievePassword() {
-		return null;
+	public Result changePassword(@RequestBody ChangePasswordVO changePasswordVO) {
+		userService.changePassword(changePasswordVO.getTelephoneNum(), changePasswordVO.getOldPassword(),
+				changePasswordVO.getNewPassword());
+		return ResultFactory.buildSuccessResult("修改成功");
 	}
 }

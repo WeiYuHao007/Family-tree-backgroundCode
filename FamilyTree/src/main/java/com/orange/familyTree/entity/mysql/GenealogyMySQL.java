@@ -3,14 +3,16 @@ package com.orange.familyTree.entity.mysql;
 import org.apache.ibatis.type.Alias;
 
 @Alias(value = "genealogy")
-public class Genealogy {
+public class GenealogyMySQL {
 
-    public Genealogy() {}
+    public GenealogyMySQL() {}
 
-    public Genealogy(Long genealogyId, String genealogyName, String genealogyAdmin, String genealogyDescription) {
+    public GenealogyMySQL(Long genealogyId, String genealogyName, String genealogyAdmin, String genealogyDefaultCenterPerson,
+                          String genealogyDescription) {
         this.genealogyId = genealogyId;
         this.genealogyName = genealogyName;
         this.genealogyAdmin = genealogyAdmin;
+        this.genealogyDefaultCenterPerson = genealogyDefaultCenterPerson;
         this.genealogyDescription = genealogyDescription;
     }
 
@@ -19,6 +21,8 @@ public class Genealogy {
     private String genealogyName;
 
     private String genealogyAdmin;
+
+    private String genealogyDefaultCenterPerson;
 
     private String genealogyDescription;
 
@@ -44,6 +48,14 @@ public class Genealogy {
 
     public void setGenealogyAdmin(String genealogyAdmin) {
         this.genealogyAdmin = genealogyAdmin;
+    }
+
+    public String getGenealogyDefaultCenterPerson() {
+        return genealogyDefaultCenterPerson;
+    }
+
+    public void setGenealogyDefaultCenterPerson(String genealogyDefaultCenterPerson) {
+        this.genealogyDefaultCenterPerson = genealogyDefaultCenterPerson;
     }
 
     public String getGenealogyDescription() {
