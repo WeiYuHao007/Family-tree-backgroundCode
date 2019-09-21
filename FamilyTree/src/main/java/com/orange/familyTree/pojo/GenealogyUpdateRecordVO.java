@@ -6,7 +6,7 @@ public class GenealogyUpdateRecordVO {
 
     public GenealogyUpdateRecordVO() {}
 
-    public GenealogyUpdateRecordVO(Timestamp updateTime, String updateCommit, String updateRemark) {
+    public GenealogyUpdateRecordVO(String updateTime, String updateCommit, String updateRemark) {
         this.updateCommit = updateCommit;
         this.updateTime = updateTime;
         this.updateRemark = updateRemark;
@@ -14,7 +14,7 @@ public class GenealogyUpdateRecordVO {
 
     private String updateCommit;
 
-    private Timestamp updateTime;
+    private String updateTime;
 
     private String updateRemark;
 
@@ -26,11 +26,11 @@ public class GenealogyUpdateRecordVO {
         this.updateCommit = updateCommit;
     }
 
-    public Timestamp getUpdateTime() {
+    public String getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Timestamp updateTime) {
+    public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
 

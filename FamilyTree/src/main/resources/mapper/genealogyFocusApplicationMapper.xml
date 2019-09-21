@@ -3,12 +3,21 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.orange.familyTree.dao.mysql.GenealogyFocusApplicationMySQLRepository">
-    <select id="findApplicationByGenealogyId" resultType="GenealogyFocusApplication">
+    <select id="findApplicationByGenealogyId" resultType="com.orange.familyTree.entity.mysql.GenealogyFocusApplication">
         SELECT *
         FROM genealogy_focus_application
         WHERE genealogyId = #{id}
     </select>
-    <select id="findApplicationByUserId" resultMap="GenealogyFocusApplication">
+    <select id="findApplicationByGenealogiesId" resultType="com.orange.familyTree.entity.mysql.GenealogyFocusApplication">
+        SELECT *
+        FROM genealogy_focus_application
+        WHERE genealogyId IN
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        ORDER BY genealogyId DESC;
+    </select>
+    <select id="findApplicationByUserId" resultType="com.orange.familyTree.entity.mysql.GenealogyFocusApplication">
         SELECT *
         FROM genealogy_focus_application
         WHERE userId = #{id}

@@ -60,6 +60,7 @@ public class ProtectedPersonController {
 			}
 		}
 		catch(Exception ex) {
+			ex.printStackTrace();
 			return null;
 		}
 	}

@@ -1,6 +1,7 @@
 package com.orange.familyTree.service;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import com.orange.familyTree.entity.mysql.GenealogyMySQL;
 import com.orange.familyTree.entity.neo4j.Person;
 import com.orange.familyTree.exceptions.MySQLException;
 import com.orange.familyTree.pojo.GenealogyFocusApplicationVO;
+import com.orange.familyTree.pojo.PersonVO;
+import com.orange.familyTree.pojo.util.UpdateRecordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +76,23 @@ public class GenealogyServiceImpl implements GenealogyService {
 		}
 	}
 
+	@Override
+	public Boolean findWhetherHaveGenealogyName(String genealogyName) throws MySQLException {
+		try {
+			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
+			if(genealogyId != null) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MySQLException("验证图谱名称是否存在出现异常。");
+		}
+	}
+
 	// 查询图谱默认中心节点名称
 	@Override
 	public String getGenealogyDefaultCenterPerson(String genealogyName) throws MySQLException{
@@ -103,6 +123,21 @@ public class GenealogyServiceImpl implements GenealogyService {
 		try {
 			List<String> nameList = genealogyNeo4jRepository.findAllGenealogy(userId);
 			return nameList;
+		}
+		catch(Exception ex){
+			throw new MyCypherException("读取关注图谱异常。");
+		}
+	}
+
+	// 查询用户是否有关注图谱
+	@Override
+	public Boolean findWhetherHaveFocusGenealogy(Long userId) throws MyCypherException {
+		try {
+			List<String> nameList = genealogyNeo4jRepository.findAllGenealogy(userId);
+			if(nameList.isEmpty()) {
+				return false;
+			}
+			return true;
 		}
 		catch(Exception ex){
 			throw new MyCypherException("读取关注图谱异常。");
@@ -140,26 +175,30 @@ public class GenealogyServiceImpl implements GenealogyService {
 	@Override
 	public ArrayList<GenealogyMySQL> keywordSearch(String keyword, Integer pageNum) throws MySQLException,
 			IllegalArgumentException {
-		try{
-			keyword = keyword.replace("", "%");
-			if(pageNum >= 1) {
+		try {
+			if(pageNum >= 1 && keyword != "") {
+				keyword = keyword.replace("", "%");
 				Integer start = 5 * pageNum - 5;
 				ArrayList<GenealogyMySQL> genealogyList = genealogyMySQLRepository.keywordSearchGenealogy(keyword, start);
-				if(genealogyList != null) {
-					return genealogyList;
+				if(genealogyList.isEmpty() && pageNum == 1) {
+					throw new MySQLException("无任何匹配的图谱。");
 				}
-				else {
-					return null;
+				if(genealogyList.isEmpty() && pageNum >= 1) {
+					throw new MySQLException("已经是最后一页。");
 				}
-			}
-			else {
-				throw new IllegalArgumentException("页数不能为小于一的整数。");
+				return genealogyList;
+			} else {
+				return null;
 			}
 		}
 		catch(IllegalArgumentException ex) {
-			throw new IllegalArgumentException("页数不能为小于一的整数。");
+			throw new MySQLException("页数不能为小于一的整数。");
+		}
+		catch(MySQLException ex) {
+			throw new MySQLException(ex.getMessage());
 		}
 		catch(Exception ex) {
+			ex.printStackTrace();
 			throw new MySQLException("关键词搜索图谱异常。");
 		}
 	}
@@ -343,7 +382,7 @@ public class GenealogyServiceImpl implements GenealogyService {
 			// 在neo4j中将关注关系创建
 			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
 			Long userId = userMySQLRepository.findUserIdByNickname(userNickname);
-			userNeo4jRepository.applyForFocusOnGenealogy(genealogyId, userId);
+			userNeo4jRepository.passFocusOnGenealogy(genealogyId, userId);
 			// 删除focusApplication表中对应行
 			genealogyFocusApplicationMySQLRepository.deleteApplication(genealogyId, userId);
 		}
@@ -360,6 +399,7 @@ public class GenealogyServiceImpl implements GenealogyService {
 			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
 			Long userId = userMySQLRepository.findUserIdByNickname(userNickname);
 			// 删除focusApplication表中对应行
+			userNeo4jRepository.refuseFocusOnGenealogy(genealogyId, userId);
 			genealogyFocusApplicationMySQLRepository.deleteApplication(genealogyId, userId);
 		}
 		catch(Exception ex) {
@@ -380,6 +420,31 @@ public class GenealogyServiceImpl implements GenealogyService {
 		catch(Exception ex) {
 			ex.printStackTrace();
 			throw new MySQLException("取消用户对图谱的关注异常。");
+		}
+	}
+
+	// 创建新图谱
+	@Override
+	public void createNewGenealogy(Long userId, String newGenealogyName, String description, PersonVO person) throws MySQLException {
+		try {
+			String userNickname = userMySQLRepository.findUserNicknameById(userId);
+			// 在MySQL中创建图谱
+			genealogyMySQLRepository.createGenealogy(newGenealogyName, userNickname, person.getName(), description);
+			// 在Neo4j中创建图谱并创建用户对该图谱的管理关系
+			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(newGenealogyName);
+			genealogyNeo4jRepository.createGenealogy(newGenealogyName, genealogyId, userId);
+			// 创建默认中心节点
+			personNeo4jRepository.createPerson(newGenealogyName, person.getName(), person.getDeathTime(),
+					person.getBirthTime(), person.getMajorAchievements());
+			// 更新动态
+			Timestamp time = UpdateRecordUtil.getNowTimestamp();
+			String remark = UpdateRecordUtil.createUpdateRemark(newGenealogyName, userNickname, time);
+			genealogyUpdateRecordMySQLRepository.createUpdateRecord(genealogyId, "图谱被创建。",
+					time, remark);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw  new MySQLException("创建新图谱出现异常。");
 		}
 	}
 

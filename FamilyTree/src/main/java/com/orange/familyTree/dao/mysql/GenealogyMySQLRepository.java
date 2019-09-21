@@ -28,11 +28,11 @@ public interface GenealogyMySQLRepository {
     String getGenealogyDefaultCenterPerson(@Param("name") String genealogyName);
 
     // 关键词查询图谱
-    ArrayList<GenealogyMySQL> keywordSearchGenealogy(@Param("keyword") String keyword, @Param("start") Integer start);
+    ArrayList<GenealogyMySQL> keywordSearchGenealogy(@Param("keyword") String keyword, @Param("start") int start);
 
     // 创建图谱（MySQL）
     void createGenealogy(@Param("name") String genealogyName, @Param("admin") String genealogyAdmin,
-                         @Param("description") String genealogyDescription);
+                         @Param("centerPersonName") String centerPersonName, @Param("description") String genealogyDescription);
     // 删除图谱（MySQL）
     void deleteGenealogy(@Param("id") Long genealogyId);
 

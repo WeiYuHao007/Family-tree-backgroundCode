@@ -4,15 +4,15 @@ public class GenealogyFocusApplicationVO {
 
     public GenealogyFocusApplicationVO() {}
 
-    public GenealogyFocusApplicationVO(String genealogyName, String userName, String applicationComment) {
+    public GenealogyFocusApplicationVO(String genealogyName, String userNickname, String applicationComment) {
         this.genealogyName = genealogyName;
-        this.userName = userName;
+        this.userNickname = userNickname;
         this.applicationComment = applicationComment;
     }
 
     private String genealogyName;
 
-    private String userName;
+    private String userNickname;
 
     private String applicationComment;
 
@@ -24,12 +24,12 @@ public class GenealogyFocusApplicationVO {
         this.genealogyName = genealogyName;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUserNickname() {
+        return userNickname;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserNickname(String userNickname) {
+        this.userNickname = userNickname;
     }
 
     public String getApplicationComment() {

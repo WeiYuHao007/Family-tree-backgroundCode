@@ -10,7 +10,7 @@ import java.util.ArrayList;
 @Repository
 public interface GenealogyUpdateRecordMySQLRepository {
     // 查找指定图谱id更新动态
-    ArrayList<GenealogyUpdateRecord> findUpdateRecordByGenealogiesId(@Param("Ids") ArrayList<Long> genealogiesId);
+    ArrayList<GenealogyUpdateRecord> findUpdateRecordByGenealogiesId(@Param("ids") ArrayList<Long> genealogiesId);
 
     // 插入动态
     void createUpdateRecord(@Param("id") Long genealogyId, @Param("commit") String updateCommit,

@@ -1,11 +1,16 @@
 package com.orange.familyTree.controller;
 
+import com.orange.familyTree.dao.mysql.UserMySQLRepository;
 import com.orange.familyTree.exceptions.MySQLException;
 import com.orange.familyTree.pojo.util.Result;
 import com.orange.familyTree.pojo.util.ResultFactory;
 import com.orange.familyTree.service.GenealogyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api")
@@ -15,6 +20,9 @@ public class AdminGenealogyController {
 
     @Autowired
     private GenealogyService genealogyService;
+
+    @Autowired
+    private UserMySQLRepository userMySQLRepository;
 
     // 查看申请关注的用户名单
     @GetMapping(value = "/tree/{tree-name}/application-list")
@@ -65,8 +73,28 @@ public class AdminGenealogyController {
     @PatchMapping(value = "/tree/{tree-name}/application/{user-name}")
     public Result passApplication(@PathVariable("tree-name") String genealogyName,
                                   @PathVariable("user-name") String userNickname) throws MySQLException {
+        // 验证用户对图谱的关注情况
+        Long userId = userMySQLRepository.findUserIdByNickname(userNickname);
+        List<String> focusedGenealogy =  genealogyService.findAllGenealogy(userId);
+        int length = focusedGenealogy.size();
+        for(int i = 0; i < length; i++) {
+            // 用户已经该图谱，关闭该操作
+            if(focusedGenealogy.get(i).equals(genealogyName)) {
+                // 数据同步出现问题，删除请求表中数据
+                this.genealogyService.refuseApplication(genealogyName, userNickname);
+                return ResultFactory.buildFailResult("该用户已经关注该图谱，数据同步出现异常。");
+            }
+        }
         genealogyService.passApplication(genealogyName, userNickname);
         return ResultFactory.buildSuccessResult("成功通过。");
+    }
+
+    // 拒绝用户对图谱的关注请求
+    @DeleteMapping(value = "/tree/{tree-name}/application/{user-name}")
+    public Result refuseApplication(HttpServletRequest request, @PathVariable("tree-name") String genealogyName,
+                                    @PathVariable("user-name") String userNickname) throws MySQLException {
+        genealogyService.refuseApplication(genealogyName, userNickname);
+        return ResultFactory.buildSuccessResult("拒绝成功。");
     }
 
     // 取消用户对图谱的关注

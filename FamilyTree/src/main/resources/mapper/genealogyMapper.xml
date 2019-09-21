@@ -8,7 +8,7 @@
         FROM genealogy
         WHERE genealogyName = #{name};
     </select>
-    <select id="findGenealogyById" resultType="Genealogy">
+    <select id="findGenealogyById" resultType="com.orange.familyTree.entity.mysql.GenealogyMySQL">
         SELECT *
         FROM genealogy
         WHERE genealogyId = #{id};
@@ -18,7 +18,7 @@
         FROM genealogy
         WHERE genealogyId = #{id};
     </select>
-    <select id="findGenealogyByName" resultType="Genealogy">
+    <select id="findGenealogyByName" resultType="com.orange.familyTree.entity.mysql.GenealogyMySQL">
         SELECT *
         FROM genealogy
         WHERE genealogyName = #{name};
@@ -33,7 +33,7 @@
         FROM genealogy
         WHERE genealogyName = #{name};
     </select>
-    <select id="keywordSearchGenealogy" resultType="ArrayList">
+    <select id="keywordSearchGenealogy" resultType="com.orange.familyTree.entity.mysql.GenealogyMySQL">
         SELECT *
         FROM genealogy
         WHERE genealogyName LIKE #{keyword}
@@ -41,8 +41,8 @@
         LIMIT #{start}, 5;
     </select>
     <select id="createGenealogy">
-        INSERT INTO genealogy(genealogyName, genealogyAdmin, genealogyDescription)
-        VALUES(#{name}, #{admin}, #{description});
+        INSERT INTO genealogy(genealogyName, genealogyAdmin, genealogyDefaultCenterPerson, genealogyDescription)
+        VALUES(#{name}, #{admin}, #{centerPersonName}, #{description});
     </select>
     <select id="deleteGenealogy">
         DELETE FROM genealogy

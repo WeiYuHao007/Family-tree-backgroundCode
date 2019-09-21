@@ -27,24 +27,6 @@ public class PublicUserController {
 
 	// 获取用户头像
 
-	// 获取登录账号的昵称
-	@GetMapping(value= "/user/nickname")
-	public Result getNickName(HttpServletRequest request) {
-		try {
-			HttpSession session = request.getSession(false);
-			if(session == null) {
-				return null;
-			}
-			Long userId = (Long) session.getAttribute("SESSION_USERID");
-			UserDO userDO = userService.getUserById(userId);
-			return ResultFactory.buildSuccessResult("请求成功", userDO.getUserNickname());
-		}
-		catch (MySQLException ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
-
 	// 用户登入
 	@PostMapping(value="/user/status")
 	public Result signIn(HttpServletRequest request, HttpServletResponse response, 
@@ -53,7 +35,9 @@ public class PublicUserController {
 		//设置为登录状态
 		HttpSession session = request.getSession(true);
 		Long userId = userDO.getUserId();
+		String userNickname = userDO.getUserNickname();
 		session.setAttribute("SESSION_USERID", userId);
+		session.setAttribute("SESSION_NICKNAME", userNickname);
 		//会话存在时间为一小时
 		session.setMaxInactiveInterval(3600);
 		//将数据库映射对象转化为视图映射对象返回
@@ -63,15 +47,21 @@ public class PublicUserController {
 	
 	// 账户注册
 	@PostMapping(value = "/user")
-	public Result register(@RequestBody RegisterVO register) {
-		userService.registerUser(register);
-		return ResultFactory.buildSuccessResult("注册成功。");
+	public Result register(@RequestBody RegisterVO register) throws MySQLException {
+		// 验证用户昵称是否存在
+		if(!userService.findWhetherHaveUserNickname(register.getNickname())) {
+			userService.registerUser(register);
+			return ResultFactory.buildSuccessResult("注册成功。");
+		}
+		else {
+			return ResultFactory.buildFailResult("用户昵称已存在，请重新输入。");
+		}
 	}
 
 
 	// 修改密码
 	@PatchMapping(value = "/user/password")
-	public Result changePassword(@RequestBody ChangePasswordVO changePasswordVO) {
+	public Result changePassword(@RequestBody ChangePasswordVO changePasswordVO) throws MySQLException {
 		userService.changePassword(changePasswordVO.getTelephoneNum(), changePasswordVO.getOldPassword(),
 				changePasswordVO.getNewPassword());
 		return ResultFactory.buildSuccessResult("修改成功");

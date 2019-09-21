@@ -6,7 +6,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 
 
-@NodeEntity(label="UserNeo4j")
+@NodeEntity(label="User")
 public class UserNeo4j {
 
 	public UserNeo4j() {}

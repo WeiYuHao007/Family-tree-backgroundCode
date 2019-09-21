@@ -6,7 +6,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 
 
-@NodeEntity(label="GenealogyMySQL")
+@NodeEntity(label="Genealogy")
 public class GenealogyNeo4j {
 
 	public GenealogyNeo4j() {}

@@ -2,6 +2,7 @@ package com.orange.familyTree.service;
 
 import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.exceptions.MySQLException;
+import com.orange.familyTree.pojo.GenealogyFocusApplicationVO;
 import com.orange.familyTree.pojo.GenealogyUpdateRecordVO;
 import com.orange.familyTree.pojo.specialPojo.LoginVO;
 import com.orange.familyTree.pojo.specialPojo.RegisterVO;
@@ -10,6 +11,9 @@ import com.orange.familyTree.pojo.UserDO;
 import java.util.ArrayList;
 
 public interface UserService {
+
+	// 查询用户名称是否存在
+	Boolean findWhetherHaveUserNickname(String userNickname) throws MySQLException;
 	
 	// 通过登录实体读取账号信息
 	UserDO getUser(LoginVO loginVO) throws MyCypherException;
@@ -28,6 +32,12 @@ public interface UserService {
 
 	// 获得用户关注的所有图谱的更新动态
 	ArrayList<GenealogyUpdateRecordVO> getGenealogyUpdateRecord(Long userId) throws MySQLException;
+
+	// 获得用户管理的所有图谱的关注请求
+	ArrayList<GenealogyFocusApplicationVO> getGenealogyFocusApplicationByUserId(Long userId) throws MyCypherException;
+
+	// 获得用户管理的所有图谱的请求数量
+	Integer getAdminGenealogyFocusApplicationNum(Long userId) throws MySQLException;
 
 	// 申请关注指定图谱
 	void applyForGenealogy(String genealogyName, String userName, String applicationComment) throws MySQLException;

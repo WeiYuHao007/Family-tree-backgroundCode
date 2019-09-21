@@ -19,18 +19,18 @@ public interface PersonService {
 			Integer radius);
 	
 	// 创建节点
-	Result createPerson(String genealogyName, PersonVO personVO);
+	Result createPerson(String genealogyName, PersonVO personVO, String adminNickname);
 	
 	// 创建节点关系
-	Result createRelationship(String genealogyName, RelationshipVO relationshipVO);
+	Result createRelationship(String genealogyName, RelationshipVO relationshipVO, String adminNickname);
 
 	// 修改节点信息
-	Result changePersonInfo(String genealogyName, PersonVO personVO) throws MyCypherException;
+	Result changePersonInfo(String genealogyName, PersonVO personVO, String adminNickname) throws MyCypherException;
 
 	// 删除节点
-	Result deletePerson(String genealogyName, String personName);
+	Result deletePerson(String genealogyName, String personName, String adminNickname);
 	
 	// 删除节点关系
-	Result deleteRelationship(String genealogyName, String sourceName, String targetName);
+	Result deleteRelationship(String genealogyName, String sourceName, String targetName, String adminNickname);
 
 }

@@ -4,6 +4,7 @@ import com.orange.familyTree.pojo.GenealogyUpdateRecordVO;
 import org.apache.ibatis.type.Alias;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 @Alias(value = "GenealogyUpdateRecord")
 public class GenealogyUpdateRecord {
@@ -31,11 +32,8 @@ public class GenealogyUpdateRecord {
 
     public static GenealogyUpdateRecordVO changeToVO(GenealogyUpdateRecord updateRecord) {
         String updateCommit = updateRecord.updateCommit;
-
-        Timestamp updateTime = updateRecord.updateTime;
-
+        String updateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(updateRecord.updateTime);
         String updateRemark = updateRecord.updateRemark;
-
         return new GenealogyUpdateRecordVO(updateTime, updateCommit, updateRemark);
     }
 

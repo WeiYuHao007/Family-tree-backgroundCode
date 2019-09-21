@@ -12,6 +12,9 @@ public interface GenealogyFocusApplicationMySQLRepository {
     // 返回族谱的所有关注请求，通过族谱ID
     ArrayList<GenealogyFocusApplication> findApplicationByGenealogyId(@Param("id") Long genealogyId);
 
+    // 返回族谱的所有关注请求，通过族谱ID列表
+    ArrayList<GenealogyFocusApplication> findApplicationByGenealogiesId(@Param("ids") ArrayList<Long> genealogiesId);
+
     // 返回所有已经发出的关注请求，通过用户ID
     ArrayList<GenealogyFocusApplication> findApplicationByUserId(@Param("id") Long userId);
 

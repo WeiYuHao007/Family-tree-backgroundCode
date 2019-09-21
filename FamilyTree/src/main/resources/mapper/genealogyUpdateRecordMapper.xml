@@ -3,13 +3,12 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.orange.familyTree.dao.mysql.GenealogyUpdateRecordMySQLRepository">
-    <select id="findUpdateRecordByGenealogyId" resultType="GenealogyUpdateRecord">
+    <select id="findUpdateRecordByGenealogiesId" resultType="com.orange.familyTree.entity.mysql.GenealogyUpdateRecord">
         SELECT *
         FROM genealogy_update_record
         WHERE genealogyId IN
-        <foreach collection="array" item="Long" index="index"
-            open="(" close=")" separator=",">
-            #{ids}
+        <foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
         </foreach>
         ORDER BY updateTime DESC
         LIMIT 5;

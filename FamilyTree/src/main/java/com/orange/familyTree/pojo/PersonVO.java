@@ -3,18 +3,14 @@ package com.orange.familyTree.pojo;
 public class PersonVO {
 
 	public PersonVO() {}
-	
-	//有参构造器
-	public PersonVO(String name, String birthTime, String deathTime,
-			String majorAchievements) {
-		super();
+
+	public PersonVO(String name, String birthTime, String deathTime, String majorAchievements) {
 		this.name = name;
 		this.birthTime = birthTime;
 		this.deathTime = deathTime;
 		this.majorAchievements = majorAchievements;
 	}
 
-	
 	private String name;
 
 	private String birthTime;
@@ -22,6 +18,8 @@ public class PersonVO {
 	private String deathTime;
 
 	private String majorAchievements;
+
+	private String commit;
 	
 	
 	public void setName(String name) {
@@ -54,5 +52,13 @@ public class PersonVO {
 	
 	public String getMajorAchievements() {
 		return this.majorAchievements;
+	}
+
+	public String getCommit() {
+		return commit;
+	}
+
+	public void setCommit(String commit) {
+		this.commit = commit;
 	}
 }

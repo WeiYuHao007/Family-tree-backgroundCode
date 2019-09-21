@@ -2,7 +2,7 @@ package com.orange.familyTree.entity.mysql;
 
 import org.apache.ibatis.type.Alias;
 
-@Alias(value = "user")
+@Alias(value = "userMySQL")
 public class UserMySQL {
 
     public UserMySQL() {}

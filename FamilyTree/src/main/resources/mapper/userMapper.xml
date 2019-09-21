@@ -30,16 +30,16 @@
     <select id="findUserNicknameById" resultType="String">
         SELECT userNickname
         FROM user
-        WHERE userId in
-        <foreach collection="list" item="Long" index="index"
-            open="(" close=")" separator=",">
-            #{ids}
-        </foreach>
+        WHERE userId =#{id}
     </select>
-    <select id="findUsersNicknameByIds" resultType="ArrayList">
+    <select id="findUsersNicknameByIds" resultType="String">
         SELECT userNickname
         FROM user
-        WHERE userId =#{id}
+        WHERE userId in
+        <foreach collection="ids" item="id" index="index"
+            open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
     <select id="findUserIdByNickname" resultType="Long">
         SELECT userId

@@ -60,6 +60,9 @@ public class PersonServiceImpl implements PersonService{
 	public Result getMainPersonData(String genealogyName, String centerNodeName, Integer radius) throws MyCypherException{
 		try{
 			String startPersonName = personNeo4jRepository.findForefathers(genealogyName, centerNodeName);
+			if(startPersonName == null) {
+				startPersonName = centerNodeName;
+			}
 			NodeShowVO startNodeShowVO = new NodeShowVO(startPersonName, 0, 0);
 			// 渲染节点列表
 			ArrayList<NodeShowVO> nodeShowVOs = new ArrayList<>();
@@ -182,10 +185,15 @@ public class PersonServiceImpl implements PersonService{
 	}
 
 	@Override
-	public Result createPerson(String genealogyName, PersonVO personVO) {
+	public Result createPerson(String genealogyName, PersonVO personVO, String adminNickname) {
 		try {
 			personNeo4jRepository.createPerson(genealogyName,  personVO.getName(), personVO.getDeathTime(), 
 					personVO.getBirthTime(), personVO.getMajorAchievements());
+			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
+			Timestamp time = UpdateRecordUtil.getNowTimestamp();
+			String remark = UpdateRecordUtil.createUpdateRemark(genealogyName, adminNickname, time);
+			genealogyUpdateRecordMySQLRepository.createUpdateRecord(genealogyId, "添加了" +
+							personVO.getName() + "的信息。",time, remark);
 			return ResultFactory.buildSuccessResult("节点创建成功。");
 		}
 		catch (Exception ex) {
@@ -195,9 +203,15 @@ public class PersonServiceImpl implements PersonService{
 	}
 
 	@Override
-	public Result deletePerson(String genealogyName, String personName) {
+	public Result deletePerson(String genealogyName, String personName, String adminNickname) {
 		try {
 			personNeo4jRepository.deletePerson(genealogyName, personName);
+			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
+			Timestamp time = UpdateRecordUtil.getNowTimestamp();
+			String remark = UpdateRecordUtil.createUpdateRemark(genealogyName, adminNickname, time);
+			genealogyUpdateRecordMySQLRepository.createUpdateRecord(genealogyId, "删除了" +
+					personName + "的信息。",time, remark);
+
 			return ResultFactory.buildSuccessResult("节点删除成功。");
 		}
 		catch (Exception ex) {
@@ -207,7 +221,7 @@ public class PersonServiceImpl implements PersonService{
 	}
 
 	@Override
-	public Result createRelationship(String genealogyName, RelationshipVO relationshipVO) {
+	public Result createRelationship(String genealogyName, RelationshipVO relationshipVO, String adminNickname) {
 		try {
 			// 不存在的人查出来的关系也不存在
 			String existRelationshipName = personNeo4jRepository.findRelationship(genealogyName, relationshipVO.getSource(), 
@@ -215,15 +229,11 @@ public class PersonServiceImpl implements PersonService{
 			if (existRelationshipName == null || existRelationshipName == "") {
 				String relationshipName = relationshipVO.getRelationshipName();
 				if (relationshipName.equals("父亲")) {
-					personNeo4jRepository.createSonRelationship(genealogyName, 
-							relationshipVO.getSource(), relationshipVO.getTarget());
 					personNeo4jRepository.createFartherRelationship(genealogyName, 
 							relationshipVO.getSource(), relationshipVO.getTarget());
 					
 				}
 				if (relationshipName.equals("母亲")) {
-					personNeo4jRepository.createSonRelationship(genealogyName, 
-							relationshipVO.getSource(), relationshipVO.getTarget());
 					personNeo4jRepository.createMotherRelationship(genealogyName, 
 							relationshipVO.getSource(), relationshipVO.getTarget());
 					
@@ -231,15 +241,9 @@ public class PersonServiceImpl implements PersonService{
 				if (relationshipName.equals("儿子")) {
 					personNeo4jRepository.createSonRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
-					// 有异意
-					personNeo4jRepository.createFartherRelationship(genealogyName, 
-							relationshipVO.getTarget(), relationshipVO.getSource());
 				}
 				if (relationshipName.equals("女儿")) {
 					personNeo4jRepository.createDaughterRelationship(genealogyName, 
-							relationshipVO.getTarget(), relationshipVO.getSource());
-					// 有异意
-					personNeo4jRepository.createFartherRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
 				}
 				if (relationshipName.equals("兄弟")) {
@@ -254,6 +258,11 @@ public class PersonServiceImpl implements PersonService{
 					personNeo4jRepository.createManToWifeRelationship(genealogyName, 
 							relationshipVO.getTarget(), relationshipVO.getSource());
 				}
+				Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
+				Timestamp time = UpdateRecordUtil.getNowTimestamp();
+				String remark = UpdateRecordUtil.createUpdateRemark(genealogyName, adminNickname, time);
+				genealogyUpdateRecordMySQLRepository.createUpdateRecord(genealogyId, "完善了" +
+						relationshipVO.getSource() + "与" + relationshipVO.getTarget() + "之间的关系。",time, remark);
 				return ResultFactory.buildSuccessResult("关系创建成功。");
 			}
 			else {
@@ -270,15 +279,18 @@ public class PersonServiceImpl implements PersonService{
 	}
 
 	@Override
-	public Result changePersonInfo(String genealogyName, PersonVO personVO) throws MyCypherException{
+	public Result changePersonInfo(String genealogyName, PersonVO personVO, String adminNickname) throws MyCypherException{
 		try {
 			personNeo4jRepository.changePersonInfo(genealogyName, personVO.getName(), personVO.getBirthTime(),
 					personVO.getDeathTime(), personVO.getMajorAchievements());
 			Timestamp time = UpdateRecordUtil.getNowTimestamp();
-			String remark = UpdateRecordUtil.createUpdateRemark(genealogyName, personVO.getName(), time);
+			String remark = UpdateRecordUtil.createUpdateRemark(genealogyName, adminNickname, time);
 			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
-			genealogyUpdateRecordMySQLRepository.createUpdateRecord(genealogyId, "修改了一个节点的信息。",
-					time, remark);
+			String commit = personVO.getCommit();
+			if(commit == "" || commit == null) {
+				commit = "修改了" + personVO.getName() + "的信息。";
+			}
+			genealogyUpdateRecordMySQLRepository.createUpdateRecord(genealogyId, commit, time, remark);
 			return ResultFactory.buildSuccessResult("修改成功。");
 		}
 		catch(Exception ex) {
@@ -288,12 +300,17 @@ public class PersonServiceImpl implements PersonService{
 	}
 
 	@Override
-	public Result deleteRelationship(String genealogyName, String sourceName, String targetName) {
+	public Result deleteRelationship(String genealogyName, String sourceName, String targetName, String adminNickname) {
 		try {
 			String existRelationshipName = personNeo4jRepository.findRelationship(genealogyName, 
 					sourceName, targetName);
-			if (existRelationshipName == null || existRelationshipName == "") {
+			if (existRelationshipName != null) {
 				personNeo4jRepository.deleteRelationship(genealogyName, sourceName, targetName);
+				Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
+				Timestamp time = UpdateRecordUtil.getNowTimestamp();
+				String remark = UpdateRecordUtil.createUpdateRemark(genealogyName, adminNickname, time);
+				genealogyUpdateRecordMySQLRepository.createUpdateRecord(genealogyId, "删除了" +
+						sourceName + "与" + targetName + "之间的关系。",time, remark);
 				return ResultFactory.buildSuccessResult("关系删除成功。");
 			}
 			else {

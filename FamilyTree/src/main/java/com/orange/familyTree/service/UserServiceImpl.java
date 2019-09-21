@@ -5,9 +5,11 @@ import com.orange.familyTree.dao.mysql.GenealogyMySQLRepository;
 import com.orange.familyTree.dao.mysql.GenealogyUpdateRecordMySQLRepository;
 import com.orange.familyTree.dao.mysql.UserMySQLRepository;
 import com.orange.familyTree.dao.neo4j.UserNeo4jRepository;
+import com.orange.familyTree.entity.mysql.GenealogyFocusApplication;
 import com.orange.familyTree.entity.mysql.GenealogyUpdateRecord;
 import com.orange.familyTree.entity.mysql.UserMySQL;
 import com.orange.familyTree.exceptions.MySQLException;
+import com.orange.familyTree.pojo.GenealogyFocusApplicationVO;
 import com.orange.familyTree.pojo.GenealogyUpdateRecordVO;
 import com.orange.familyTree.pojo.specialPojo.RegisterVO;
 import com.orange.familyTree.pojo.UserDO;
@@ -19,6 +21,9 @@ import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.pojo.specialPojo.LoginVO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -39,6 +44,23 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private GenealogyMySQLRepository genealogyMySQLRepository;
+
+	@Override
+	public Boolean findWhetherHaveUserNickname(String userNickname) throws MySQLException {
+		try {
+			Long userId = userMySQLRepository.findUserIdByNickname(userNickname);
+			if(userId != null) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MySQLException("验证用户昵称是否存在出现异常。");
+		}
+	}
 
 	// 登入账号
 	@Override
@@ -98,8 +120,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void registerUser(RegisterVO register) throws MyCypherException {
 		try {
+			System.out.println(register.getNickname());
 			userMySQLRepository.registerUser(register.getNickname(), register.getPhoneNum(), register.getEmail(),
 					register.getPassword());
+			Long userId = userMySQLRepository.findUserIdByNickname(register.getNickname());
+			userNeo4jRepository.createUser(userId);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -139,7 +164,57 @@ public class UserServiceImpl implements UserService {
 			return updateRecordVOs;
 		}
 		catch(Exception ex) {
+			ex.printStackTrace();
 			throw new MySQLException("获得用户关注的所有图谱的更新动态异常。");
+		}
+	}
+
+	// 获得用户管理的所有图谱的关注请求
+	@Override
+	public ArrayList<GenealogyFocusApplicationVO> getGenealogyFocusApplicationByUserId(Long userId) throws MyCypherException {
+		try {
+			ArrayList<Long> adminGenealogiesId = userNeo4jRepository.findAllAdminGenealogy(userId);
+			if(!adminGenealogiesId.isEmpty()) {
+				ArrayList<GenealogyFocusApplication> applications =
+						genealogyFocusApplicationMySQLRepository.findApplicationByGenealogiesId(adminGenealogiesId);
+				ArrayList<GenealogyFocusApplicationVO> applicationVOs = new ArrayList<>();
+				int length = applications.size();
+				for(int i = 0; i< length; i++) {
+					// 后期可以优化为查询图谱（用户）ID与名称的map
+					GenealogyFocusApplication application = applications.get(i);
+					String genealogyName = genealogyMySQLRepository.findGenealogyNameById(application.getGenealogyId());
+					String userNickname = userMySQLRepository.findUserNicknameById(application.getUserId());
+					applicationVOs.add(new GenealogyFocusApplicationVO(genealogyName, userNickname,
+							application.getApplicationComment()));
+				}
+				return applicationVOs;
+			}
+			else {
+				return null;
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MyCypherException("获得用户管理的所有图谱的关注请求异常。");
+		}
+	}
+
+	@Override
+	public Integer getAdminGenealogyFocusApplicationNum(Long userId) throws MySQLException {
+		try {
+			ArrayList<Long> adminGenealogiesId = userNeo4jRepository.findAllAdminGenealogy(userId);
+			if(!adminGenealogiesId.isEmpty()) {
+				ArrayList<GenealogyFocusApplication> applications =
+						genealogyFocusApplicationMySQLRepository.findApplicationByGenealogiesId(adminGenealogiesId);
+				return applications.size();
+			}
+			else {
+				return null;
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MySQLException("获得用户管理的所有图谱的关注请求异常。");
 		}
 	}
 

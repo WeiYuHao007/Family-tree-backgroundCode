@@ -7,8 +7,12 @@ import com.orange.familyTree.entity.mysql.GenealogyMySQL;
 import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.exceptions.MySQLException;
 import com.orange.familyTree.pojo.GenealogyFocusApplicationVO;
+import com.orange.familyTree.pojo.PersonVO;
 
 public interface GenealogyService {
+
+	// 查询图谱名称是否存在
+	Boolean findWhetherHaveGenealogyName(String genealogyName) throws MySQLException;
 
 	// 查询图谱默认中心节点名称
 	String getGenealogyDefaultCenterPerson(String genealogyName) throws MySQLException;
@@ -24,6 +28,9 @@ public interface GenealogyService {
 
 	// 查询用户关注的图谱
 	List<String> findAllGenealogy(Long userId) throws MyCypherException;
+
+	// 查询用户是否有关注的图谱
+	Boolean findWhetherHaveFocusGenealogy(Long userId) throws MyCypherException;
 
 	// 查询指定图谱拥有的所有节点名称
 	List<String> findPersonsByGenealogyName (String genealogyName) throws MyCypherException;
@@ -65,4 +72,7 @@ public interface GenealogyService {
 
 	// 取消用户对图谱的关注
 	void cancelGenealogyFocus(String genealogyName, String userNickname) throws MySQLException;
+
+	// 创建新图谱
+	void createNewGenealogy(Long userId, String newGenealogyName, String description, PersonVO person) throws MySQLException;
 }
