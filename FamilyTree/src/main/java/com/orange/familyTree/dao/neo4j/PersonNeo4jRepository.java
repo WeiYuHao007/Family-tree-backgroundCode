@@ -62,12 +62,12 @@ public interface PersonNeo4jRepository extends Neo4jRepository<Person, Long>{
 	// 创建Person节点（Neo4j）
 	@Query("MATCH (g:Genealogy) \n" +
 			"WHERE g.name = {genealogyName} \n" +
-			"CREATE (p:Person{name: {personName}, deathTime: {deathTime}, birthTime: {birthTime}, " +
+			"CREATE (p:Person{name: {personName}, gender: {gender}, deathTime: {deathTime}, birthTime: {birthTime}, " +
 			"majorAchievements: {majorAchievements}}) \n" +
 			"CREATE (g)-[:OWNS]->(p)")
 	void createPerson(@Param("genealogyName") String genealogyName, @Param("personName") String name,
-					  @Param("deathTime") String deathTime, @Param("birthTime") String birthTime,
-					  @Param("majorAchievements") String majorAchievements);
+					  @Param("gender") String gender, @Param("deathTime") String deathTime,
+					  @Param("birthTime") String birthTime, @Param("majorAchievements") String majorAchievements);
 
 	// 创建关系（父母 <-儿子）（Neo4j）
 	@Query("MATCH (p1:Person)<-[:OWNS]-(g:Genealogy)-[:OWNS]->(p2:Person) \n" +
@@ -116,11 +116,13 @@ public interface PersonNeo4jRepository extends Neo4jRepository<Person, Long>{
 	// 修改节点信息
 	@Query("MATCH (g:Genealogy)-[:OWNS]->(p:Person)" +
 			"WHERE g.name = {genealogyName} AND p.name = {personName}" +
+			"SET p.gender = {gender}" +
 			"SET p.birthTime = {birthTime}" +
 			"SET p.deathTime = {deathTime}" +
 			"SET p.majorAchievements = {majorAchievements}")
 	void changePersonInfo(@Param("genealogyName") String genealogy, @Param("personName") String personName,
-						  @Param("birthTime") String personBirthTime, @Param("deathTime") String personDeathTime,
+						  @Param("gender") String gender, @Param("birthTime") String personBirthTime,
+						  @Param("deathTime") String personDeathTime,
 						  @Param("majorAchievements") String personMajorAchievements);
 
 	// 删除Person节点（Neo4j）

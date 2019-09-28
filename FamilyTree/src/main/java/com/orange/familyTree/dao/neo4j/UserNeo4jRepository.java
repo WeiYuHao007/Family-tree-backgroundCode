@@ -36,7 +36,7 @@ public interface UserNeo4jRepository extends Neo4jRepository<UserNeo4j, Long> {
     @Query("MATCH (u:User)-[r:FOCUS_ON]->(g:Genealogy) \n" +
             "WHERE u.userId = {userId} AND g.genealogyId = {genealogyId} " +
             "AND r.show = true AND r.admin = false \n" +
-            "REMOVE r")
+            "DELETE r")
     void cancelFocusOnGenealogy(@Param("genealogyId") Long genealogyId, @Param("userId") Long userId);
 
     // 申请关注指定图谱（Neo4j）

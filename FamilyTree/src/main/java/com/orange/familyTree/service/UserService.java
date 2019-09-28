@@ -23,12 +23,21 @@ public interface UserService {
 
 	// 通过用户nickname读取UserShow
 	UserDO getUserByNickname(String userNickname) throws MySQLException;
+
+	// 查询用户头像文件名
+	String getUserAvatarFileName(String userNickname) throws MySQLException;
 	
 	// 注册账号
 	void registerUser(RegisterVO registerVO) throws MyCypherException;
 
 	// 修改密码
 	void changePassword(Long userId, String oldPassword, String newPassword) throws MySQLException;
+
+	// 修改用户头像文件名称
+	void changeUserAvatarFileName(String userNickname, String newUserAvatarFileName) throws MySQLException;
+
+	// 修改用户昵称和个人简介
+	void changeUserNicknameAndIntroduction(String userNickname, String newUserNickname, String newUserIntroduction) throws MySQLException;
 
 	// 获得用户关注的所有图谱的更新动态
 	ArrayList<GenealogyUpdateRecordVO> getGenealogyUpdateRecord(Long userId) throws MySQLException;

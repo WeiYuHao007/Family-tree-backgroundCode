@@ -12,12 +12,11 @@ import org.neo4j.ogm.annotation.Property;
 public class Person{
 
 	public Person() {}
-	
-	//有参构造器
-	public Person(String name, String birthTime, String deathTime,
-			String majorAchievements) {
-		super();
+
+	public Person(Long uuid, String name, String gender, String birthTime, String deathTime, String majorAchievements) {
+		this.uuid = uuid;
 		this.name = name;
+		this.gender = gender;
 		this.birthTime = birthTime;
 		this.deathTime = deathTime;
 		this.majorAchievements = majorAchievements;
@@ -29,6 +28,9 @@ public class Person{
 
 	@Property(name = "name")
 	private String name;
+
+	@Property(name = "gender")
+	private String gender;
 	
 	@Property(name = "birthTime")
 	private String birthTime;
@@ -41,7 +43,7 @@ public class Person{
 
 	public static PersonVO changeToVO(Person person) {
 		if(person != null) {
-			PersonVO personVO = new PersonVO(person.name, person.birthTime, person.deathTime,
+			PersonVO personVO = new PersonVO(person.name, person.gender, person.birthTime, person.deathTime,
 					person.majorAchievements);
 			return personVO;
 		}
@@ -50,44 +52,51 @@ public class Person{
 		}
 	}
 
-	//以下为一系列get、set操作。
 	public Long getUuid() {
 		return uuid;
 	}
-	
+
 	public void setUuid(Long uuid) {
 		this.uuid = uuid;
 	}
-	
+
+	public String getName() {
+		return name;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	public String getName() {
-		return this.name;
+
+	public String getGender() {
+		return gender;
 	}
-	
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getBirthTime() {
+		return birthTime;
+	}
+
 	public void setBirthTime(String birthTime) {
 		this.birthTime = birthTime;
 	}
-	
-	public String getBirthTime() {
-		return this.birthTime;
+
+	public String getDeathTime() {
+		return deathTime;
 	}
-	
+
 	public void setDeathTime(String deathTime) {
 		this.deathTime = deathTime;
 	}
-	
-	public String getDeathTime() {
-		return this.deathTime;
+
+	public String getMajorAchievements() {
+		return majorAchievements;
 	}
-	
+
 	public void setMajorAchievements(String majorAchievements) {
 		this.majorAchievements = majorAchievements;
-	}
-	
-	public String getMajorAchievements() {
-		return this.majorAchievements;
 	}
 }

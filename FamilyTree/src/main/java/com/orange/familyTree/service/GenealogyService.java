@@ -26,6 +26,9 @@ public interface GenealogyService {
 	// 查询目标族谱的所有关注者昵称
 	List<String> findGenealogyFollowersName(String genealogyName) throws MyCypherException;
 
+	// 查询目标族谱的所有普通关注者昵称
+	List<String> findGenealogyOrdinaryFollowers(String genealogyName) throws MyCypherException;
+
 	// 查询用户关注的图谱
 	List<String> findAllGenealogy(Long userId) throws MyCypherException;
 
@@ -59,7 +62,7 @@ public interface GenealogyService {
 	Boolean setAdmin(String genealogyName, String newAdminNickname) throws MySQLException;
 
 	// 转让管理员
-	void transferAdmin(String genealogyName, String oldAdminNickname, String newAdminNickname) throws MySQLException;
+	Boolean transferAdmin(String genealogyName, String oldAdminNickname, String newAdminNickname) throws MySQLException;
 
 	// 更改默认中心节点
 	void changeDefaultCenterPerson(String genealogyName, String newCenterPerson) throws MySQLException;

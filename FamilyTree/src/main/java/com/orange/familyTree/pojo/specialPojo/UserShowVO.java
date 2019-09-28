@@ -5,9 +5,10 @@ public class UserShowVO {
 
     public UserShowVO() {}
 
-    public UserShowVO(String nickname, String introduction, String registerTime) {
+    public UserShowVO(String nickname, String introduction, String avatar, String registerTime) {
         this.nickname = nickname;
         this.introduction = introduction;
+        this.avatar = avatar;
         this.registerTime = registerTime;
     }
 
@@ -15,29 +16,23 @@ public class UserShowVO {
 
     private String introduction;
 
+    private String avatar;
+
     private String registerTime;
 
     public String getNickname() {
         return nickname;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     public String getIntroduction() {
         return introduction;
     }
 
-    public void setIntroduction(String introduction) {
-        this.introduction = introduction;
+    public String getAvatar() {
+        return avatar;
     }
 
     public String getRegisterTime() {
         return registerTime;
-    }
-
-    public void setRegisterTime(String registerTime) {
-        this.registerTime = registerTime;
     }
 }

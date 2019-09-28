@@ -23,7 +23,7 @@ public class ProtectedGenealogyController {
 	// 获得图谱的所有关注者
 	@GetMapping(value = "/tree/{tree-name}/followers")
 	public Result findFollowersByGenealogyName(@PathVariable("tree-name") String genealogyName) {
-		return ResultFactory.buildSuccessResult(genealogyService.findGenealogyFollowersName(genealogyName));
+		return ResultFactory.buildSuccessResult(genealogyService.findGenealogyOrdinaryFollowers(genealogyName));
 	}
 
 	// 获得图谱的详细信息

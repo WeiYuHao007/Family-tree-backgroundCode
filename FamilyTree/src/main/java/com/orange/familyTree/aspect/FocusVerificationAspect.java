@@ -50,6 +50,6 @@ public class FocusVerificationAspect {
 			}
 		}
 		// 未通过权限验证
-		return ResultFactory.buildAuthenticationResult("您无修改图谱数据的权限。");
+		return ResultFactory.buildAuthenticationResult("您无查看该图谱的权限。");
 	}
 }

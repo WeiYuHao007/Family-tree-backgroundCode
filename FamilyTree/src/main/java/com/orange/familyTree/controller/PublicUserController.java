@@ -5,10 +5,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.orange.familyTree.exceptions.MySQLException;
+import com.orange.familyTree.exceptions.UserException;
 import com.orange.familyTree.pojo.*;
 import com.orange.familyTree.pojo.specialPojo.ChangePasswordVO;
 import com.orange.familyTree.pojo.specialPojo.LoginVO;
 import com.orange.familyTree.pojo.specialPojo.RegisterVO;
+import com.orange.familyTree.pojo.specialPojo.UserShowVO;
+import com.orange.familyTree.pojo.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +26,6 @@ public class PublicUserController {
 
 	@Autowired
 	private UserService userService;
-
-
-	// 获取用户头像
 
 	// 用户登入
 	@PostMapping(value="/user/status")
@@ -66,4 +66,22 @@ public class PublicUserController {
 				changePasswordVO.getNewPassword());
 		return ResultFactory.buildSuccessResult("修改成功");
 	}
+
+	// 获取UserVO,用于用户展示个人资料卡
+	@GetMapping(value = "/user/{user-nickname}/info-show")
+	public Result getUserInfo(@PathVariable("user-nickname") String userNickname)
+			throws MySQLException {
+		try {
+			String nickname = userNickname;
+			UserDO userDO = userService.getUserByNickname(nickname);
+			// 在data中返回UserShow实体
+			UserShowVO userShow = UserDO.changeToShow(userDO);
+			return ResultFactory.buildSuccessResult(userShow);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return ResultFactory.buildFailResult("获取用户界面渲染信息异常。");
+		}
+	}
+
 }

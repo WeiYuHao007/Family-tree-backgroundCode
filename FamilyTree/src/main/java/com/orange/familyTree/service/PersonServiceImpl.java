@@ -187,7 +187,7 @@ public class PersonServiceImpl implements PersonService{
 	@Override
 	public Result createPerson(String genealogyName, PersonVO personVO, String adminNickname) {
 		try {
-			personNeo4jRepository.createPerson(genealogyName,  personVO.getName(), personVO.getDeathTime(), 
+			personNeo4jRepository.createPerson(genealogyName,  personVO.getName(), personVO.getGender(), personVO.getDeathTime(),
 					personVO.getBirthTime(), personVO.getMajorAchievements());
 			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
 			Timestamp time = UpdateRecordUtil.getNowTimestamp();
@@ -281,7 +281,7 @@ public class PersonServiceImpl implements PersonService{
 	@Override
 	public Result changePersonInfo(String genealogyName, PersonVO personVO, String adminNickname) throws MyCypherException{
 		try {
-			personNeo4jRepository.changePersonInfo(genealogyName, personVO.getName(), personVO.getBirthTime(),
+			personNeo4jRepository.changePersonInfo(genealogyName, personVO.getName(), personVO.getGender(), personVO.getBirthTime(),
 					personVO.getDeathTime(), personVO.getMajorAchievements());
 			Timestamp time = UpdateRecordUtil.getNowTimestamp();
 			String remark = UpdateRecordUtil.createUpdateRemark(genealogyName, adminNickname, time);

@@ -2,6 +2,8 @@ package com.orange.familyTree.controller;
 
 import com.orange.familyTree.dao.mysql.UserMySQLRepository;
 import com.orange.familyTree.exceptions.MySQLException;
+import com.orange.familyTree.pojo.specialPojo.DescriptionAndNameVO;
+import com.orange.familyTree.pojo.specialPojo.NewCenterPersonVO;
 import com.orange.familyTree.pojo.util.Result;
 import com.orange.familyTree.pojo.util.ResultFactory;
 import com.orange.familyTree.service.GenealogyService;
@@ -47,25 +49,44 @@ public class AdminGenealogyController {
     // 修改图谱名称和描述
     @PatchMapping(value = "/tree/{tree-name}/name-and-description")
     public Result changeGenealogyNameAndDescription(@PathVariable("tree-name") String genealogyName,
-                                                    @RequestBody String description) throws MySQLException {
-        genealogyService.changeGenealogyDescription(genealogyName, description);
+                                                    @RequestBody DescriptionAndNameVO descriptionAndNameVO) throws MySQLException {
+        genealogyService.changeGenealogyDescription(genealogyName, descriptionAndNameVO.getNewDescription());
+        genealogyService.changeGenealogyName(genealogyName, descriptionAndNameVO.getNewGenealogyName());
         return ResultFactory.buildSuccessResult("修改成功。");
     }
 
     // 转让管理员
-    @PatchMapping(value = "/tree/{tree-name}/admin")
-    public Result transferAdmin(@PathVariable("tree-name") String genealogyName,
-                                @RequestParam("newAdminNickname") String newAdminNickname,
-                                @RequestParam("oldAdminNickname") String oldAdminNickname) throws MySQLException {
-        genealogyService.transferAdmin(genealogyName, newAdminNickname, oldAdminNickname);
-        return ResultFactory.buildSuccessResult("转让成功");
+    @PatchMapping(value = "/tree/{tree-name}/admin/{new-admin}")
+    public Result transferAdmin(HttpServletRequest request, @PathVariable("tree-name") String genealogyName,
+                                @PathVariable("new-admin") String newAdmin) throws MySQLException {
+        List<Long> adminsId = genealogyService.findGenealogyAdminsByName(genealogyName);
+        if(adminsId.size() <= 2) {
+            Boolean state = genealogyService.setAdmin(genealogyName, newAdmin);
+            if(state) {
+                return ResultFactory.buildSuccessResult("设置成功。");
+            }
+            else {
+                return ResultFactory.buildFailResult("指定用户已是管理员。");
+            }
+        }
+        else {
+            HttpSession session = request.getSession(false);
+            String oldAdminNickname = (String) session.getAttribute("SESSION_NICKNAME");
+            Boolean state = genealogyService.transferAdmin(genealogyName, oldAdminNickname, newAdmin);
+            if(state) {
+                return ResultFactory.buildSuccessResult("转让成功。");
+            }
+            else {
+                return ResultFactory.buildFailResult("指定用户已是管理员。");
+            }
+        }
     }
 
     // 更改默认中心节点
     @PatchMapping(value = "/tree/{tree-name}/center-node")
     public Result changeDefaultCenterPerson(@PathVariable("tree-name") String genealogyName,
-                                            @RequestParam("newCenterNode") String newCenterPerson) throws MySQLException {
-        genealogyService.changeDefaultCenterPerson(genealogyName, newCenterPerson);
+                                            @RequestBody NewCenterPersonVO newCenterPersonVO) throws MySQLException {
+        genealogyService.changeDefaultCenterPerson(genealogyName, newCenterPersonVO.getName());
         return ResultFactory.buildSuccessResult("更改成功");
     }
 

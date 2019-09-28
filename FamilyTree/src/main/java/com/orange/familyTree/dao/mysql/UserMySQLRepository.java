@@ -12,7 +12,7 @@ public interface UserMySQLRepository {
 
     // 账户注册（MySQL）
     void registerUser(@Param("name") String userNickname, @Param("phoneNum") Integer userPhoneNum,
-                             @Param("email") String userEmail, @Param("password") String password);
+                      @Param("email") String userEmail, @Param("password") String password);
 
     // 通过用户ID查找用户（MySQL）
     UserMySQL findUserById(@Param("id") Long userId);
@@ -29,10 +29,14 @@ public interface UserMySQLRepository {
     // 通过用户id查找用户昵称（MySQL）
     String findUserNicknameById(@Param("id") Long userId);
 
+    // 通过多位用户id查找昵称（MySQL）
     List<String> findUsersNicknameByIds(@Param("ids") List<Long> userIds);
 
     // 查找用户id通过用户昵称（MySQL）
     Long findUserIdByNickname(@Param("nickname") String userNickname);
+
+    // 查询用户头像文件名称（MySQL）
+    String findUserAvatar(@Param("nickname") String userNickname);
 
     // 销毁用户（MySQL）
     void destroyUserById(@Param("id") Long userId);
@@ -40,4 +44,11 @@ public interface UserMySQLRepository {
     // 修改密码（MySQL）
     void changePassword(@Param("id") Long userId, @Param("oldPassword") String oldPassword,
                         @Param("newPassword") String newPassword);
+
+    // 修改用户头像文件名称（MySQL）
+    void changeUserAvatar(@Param("nickname") String userNickname, @Param("avatar") String newUserAvatar);
+
+    // 修改用户昵称和个人简介（MySQL）
+    void changeUserNicknameAndIntroduction(@Param("oldNickname") String oldNickname, @Param("newNickname") String newNickname,
+                                           @Param("introduction") String newIntroduction);
 }

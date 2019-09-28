@@ -41,6 +41,11 @@
             #{id}
         </foreach>
     </select>
+    <select id="findUserAvatar" resultType="String">
+        SELECT userAvatar
+        FROM user
+        WHERE userNickname =#{nickname}
+    </select>
     <select id="findUserIdByNickname" resultType="Long">
         SELECT userId
         FROM user
@@ -50,6 +55,17 @@
         UPDATE user
         SET userPassword = #{newPassword}
         WHERE userId = #{id} AND userPassword = #{oldPassword};
+    </select>
+    <select id="changeUserAvatar">
+        UPDATE user
+        SET userAvatar = #{avatar}
+        WHERE userNickname = #{nickname} AND userAvatar = #{avatar};
+    </select>
+    <select id="changeUserNicknameAndIntroduction">
+        UPDATE user
+        SET userNickname = #{newNickname},
+            userIntroduction = #{introduction}
+        WHERE userNickname = #{oldNickname};
     </select>
     <select id="destroyUserById">
         DELETE FROM user

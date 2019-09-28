@@ -26,9 +26,15 @@ public interface GenealogyNeo4jRepository extends Neo4jRepository<GenealogyNeo4j
 
 	// 查询关注指定图谱的所有用户的ID（Neo4j）
 	@Query("MATCH (u:User)-[r:FOCUS_ON]-(g:Genealogy) \n" +
-			"WHERE g.name = {name} AND r.show = true \n" +
+			"WHERE g.name = {name} AND r.show = true\n" +
 			"RETURN u.userId")
 	List<Long> findGenealogyFollowersByName(@Param("name") String genealogyName);
+
+	// 查询关注指定图谱的所有普通关注者的ID（Neo4j）
+	@Query("MATCH (u:User)-[r:FOCUS_ON]-(g:Genealogy) \n" +
+			"WHERE g.name = {name} AND r.show = true AND r.admin <> true\n" +
+			"RETURN u.userId")
+	List<Long> findGenealogyOrdinaryFollowers(@Param("name") String genealogyName);
 
 	// 通过图谱名称查询指定图谱的管理员ID
 	@Query("MATCH (u:User)-[r:FOCUS_ON]-(g:Genealogy) \n" +
@@ -53,10 +59,9 @@ public interface GenealogyNeo4jRepository extends Neo4jRepository<GenealogyNeo4j
 	void setNewAdmin(@Param("genealogyId") Long genealogyId, @Param("newAdminId") Long newAdminId);
 
 	// 转让图谱管理员（Neo4j）
-	@Query("MATCH (u1:User)-[r1:FOCUS_ON]->(g:Genealogy)<-[r2:FOCUS_ON]-(u2:User) \n" +
-			"WHERE u1.userId = {oldAdminId} AND u2.userId = {newAdminId} AND g.genealogyId = {genealogyId} " +
-			"AND r1.show = r2.show = true AND r1.admin = true AND r2.admin = false \n" +
-			"SET r1.admin = false \n" +
+	@Query("MATCH (u1:User)-[r1:FOCUS_ON]->(g:Genealogy)<-[r2:FOCUS_ON]-(u2:User)\n" +
+			"WHERE u1.userId = {oldAdminId} AND u2.userId = {newAdminId} AND g.genealogyId = {genealogyId} AND r1.show = true AND r2.show = true AND r1.admin = true AND r2.admin = false\n" +
+			"SET r1.admin = false\n" +
 			"SET r2.admin = true")
 	void transferAdmin(@Param("genealogyId") Long genealogyId, @Param("oldAdminId") Long oldAdminId,
 					   @Param("newAdminId") Long newAdminId);

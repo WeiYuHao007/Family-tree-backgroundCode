@@ -7,13 +7,16 @@ import javax.servlet.http.HttpSession;
 
 import com.orange.familyTree.dao.mysql.GenealogyMySQLRepository;
 import com.orange.familyTree.exceptions.MySQLException;
+import com.orange.familyTree.exceptions.UserException;
 import com.orange.familyTree.pojo.GenealogyFocusApplicationVO;
 import com.orange.familyTree.pojo.GenealogyUpdateRecordVO;
 import com.orange.familyTree.pojo.UserDO;
 import com.orange.familyTree.pojo.UserVO;
 import com.orange.familyTree.pojo.specialPojo.ApplicationVO;
+import com.orange.familyTree.pojo.specialPojo.NewUserNicknameAndIntroduction;
 import com.orange.familyTree.pojo.specialPojo.UserShowVO;
 
+import com.orange.familyTree.pojo.util.FileUtil;
 import com.orange.familyTree.service.GenealogyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +24,10 @@ import org.springframework.web.bind.annotation.*;
 import com.orange.familyTree.pojo.util.Result;
 import com.orange.familyTree.pojo.util.ResultFactory;
 import com.orange.familyTree.service.UserService;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +54,7 @@ public class ProtectedUserController {
 		return ResultFactory.buildSuccessResult("注销成功。");
 	}
 
-	// 获取登录账号的昵称
+	// 获取登录账号头信息
 	@GetMapping(value= "/user/header-info")
 	public Result getNickName(HttpServletRequest request) {
 		try {
@@ -70,28 +76,24 @@ public class ProtectedUserController {
 
 	// 获取UserVO,用于用户展示个人资料卡
 	// 获取UserShow，用于渲染界面(迭代时应该考虑分离俩部分)
-	@GetMapping(value = "/user/{user-nickname}/info")
-	public Result getUserInfo(HttpServletRequest request, @PathVariable("user-nickname") String userNickname,
-							  @RequestParam("all") Boolean all) throws MySQLException {
-		HttpSession session = request.getSession(false);
-		if(all) {
+	@GetMapping(value = "/user/{user-nickname}/info-vo")
+	public Result getUserInfo(HttpServletRequest request, @PathVariable("user-nickname") String userNickname)
+			throws MySQLException {
+		try {
+			HttpSession session = request.getSession(false);
 			String session_nickname = (String) session.getAttribute("SESSION_NICKNAME");
-			if(userNickname.equals(session_nickname)) {
+			if (userNickname.equals(session_nickname)) {
 				Long userId = (Long) session.getAttribute("SESSION_USERID");
 				UserDO userDO = userService.getUserById(userId);
 				UserVO userVO = UserDO.changeToVo(userDO);
 				return ResultFactory.buildSuccessResult(userVO);
-			}
-			else {
-				return null;
+			} else {
+				return ResultFactory.buildFailResult("无法获得他人的个人资料卡。");
 			}
 		}
-		else {
-			String nickname = userNickname;
-			UserDO userDO = userService.getUserByNickname(nickname);
-			// 在data中返回UserShow实体
-			UserShowVO userShow = UserDO.changeToShow(userDO);
-			return ResultFactory.buildSuccessResult(userShow);
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return ResultFactory.buildFailResult("获取个人资料卡信息异常。");
 		}
 	}
 
@@ -168,5 +170,58 @@ public class ProtectedUserController {
 		UserDO userDO = userService.getUserById(userId);
 		userService.applyForGenealogy(genealogyName, userDO.getUserNickname(), application.getComment());
 		return ResultFactory.buildSuccessResult("申请成功。");
+	}
+
+	// 上传用户头像
+	@PostMapping("/user/avatar")
+	public Result postUserAvatar(@RequestBody MultipartFile avatar, HttpServletRequest request) throws IOException {
+		try {
+			HttpSession session = request.getSession(false);
+			String userNickname = (String) session.getAttribute("SESSION_NICKNAME");
+			String userAvatarFileName = userService.getUserAvatarFileName(userNickname);
+			if(userAvatarFileName != null) {
+				// 该用户曾经提交过头像
+				File avatarFile = new File("D:\\programming_space\\Java\\Workspacejava\\Family-tree-backgroundCode\\devImage",
+						userAvatarFileName);
+				if(avatarFile.exists()) {
+					// 文件还存在
+					avatar.transferTo(avatarFile);
+					return ResultFactory.buildSuccessResult("上传成功。");
+				}
+				else {
+					return ResultFactory.buildFailResult("文件因不明原因丢失，请重新上传。");
+				}
+			}
+			// 该用户未曾提交过头像
+			String fileName = avatar.getOriginalFilename();
+			String fileType = fileName.substring(fileName.lastIndexOf("."));
+			Long userId = (Long) session.getAttribute("SESSION_USERID");
+			File newAvatarFile = new File("D:\\programming_space\\Java\\Workspacejava\\Family-tree-backgroundCode\\devImage",
+					FileUtil.getUUID()+ userId + fileType);
+			if(!newAvatarFile.exists()) {
+				newAvatarFile.createNewFile();
+			}
+			avatar.transferTo(newAvatarFile);
+			return ResultFactory.buildSuccessResult("上传成功。");
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			throw new UserException("上传失败");
+		}
+	}
+
+	// 修改用户昵称和个人简介
+	@PostMapping("/user/nickname-introduction")
+	public Result changeUserNicknameAndIntroduction(HttpServletRequest request, @RequestBody NewUserNicknameAndIntroduction newInfo) {
+		try{
+			HttpSession session = request.getSession(false);
+			String userNickname = (String) session.getAttribute("SESSION_NICKNAME");
+			userService.changeUserNicknameAndIntroduction(userNickname, newInfo.getNewNickname(), newInfo.getNewIntroduction());
+			return ResultFactory.buildSuccessResult("修改成功。");
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return ResultFactory.buildFailResult("修改失败。");
+		}
 	}
 }

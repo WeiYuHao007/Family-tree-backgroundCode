@@ -46,7 +46,7 @@ public class ProtectedPersonController {
 		return personService.getShortPath(genealogyName, startPersonName, endPersonName, radius);
 	}
 
-	// 获得图谱主要渲染数据
+	// 获得图谱主要节点关系数据
 	@GetMapping(value = "/tree/{tree-name}/tree-main-data")
 	public Result getGenealogyMainData(
 			@PathVariable("tree-name") String genealogyName, @RequestParam("radius") Integer radius){

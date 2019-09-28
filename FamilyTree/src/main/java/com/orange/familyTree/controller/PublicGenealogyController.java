@@ -41,7 +41,7 @@ public class PublicGenealogyController {
 		if(!genealogyService.findWhetherHaveGenealogyName(newGenealogyVO.getNewGenealogyName())) {
 			HttpSession session = request.getSession(false);
 			Long userId = (Long) session.getAttribute("SESSION_USERID");
-			PersonVO personVO = new PersonVO(newGenealogyVO.getDefaultCenterNodeName(), newGenealogyVO.getNodeBirthTime(),
+			PersonVO personVO = new PersonVO(newGenealogyVO.getDefaultCenterNodeName(), newGenealogyVO.getNodeGender(), newGenealogyVO.getNodeBirthTime(),
 					newGenealogyVO.getNodeDeathTime(), newGenealogyVO.getNodeMajorAchievements());
 			genealogyService.createNewGenealogy(userId, newGenealogyVO.getNewGenealogyName(),
 					newGenealogyVO.getNewGenealogyDescription(), personVO);

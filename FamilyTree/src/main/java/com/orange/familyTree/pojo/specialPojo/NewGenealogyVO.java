@@ -6,10 +6,11 @@ public class NewGenealogyVO {
     public NewGenealogyVO() {}
 
     public NewGenealogyVO(String newGenealogyName, String newGenealogyDescription, String defaultCenterNodeName,
-                          String nodeBirthTime, String nodeDeathTime, String nodeMajorAchievements) {
+                          String nodeGender, String nodeBirthTime, String nodeDeathTime, String nodeMajorAchievements) {
         this.newGenealogyName = newGenealogyName;
         this.newGenealogyDescription = newGenealogyDescription;
         this.defaultCenterNodeName = defaultCenterNodeName;
+        this.nodeGender = nodeGender;
         this.nodeBirthTime = nodeBirthTime;
         this.nodeDeathTime = nodeDeathTime;
         this.nodeMajorAchievements = nodeMajorAchievements;
@@ -20,6 +21,8 @@ public class NewGenealogyVO {
     private String newGenealogyDescription;
 
     private String defaultCenterNodeName;
+
+    private String nodeGender;
 
     private String nodeBirthTime;
 
@@ -49,6 +52,14 @@ public class NewGenealogyVO {
 
     public void setDefaultCenterNodeName(String defaultCenterNodeName) {
         this.defaultCenterNodeName = defaultCenterNodeName;
+    }
+
+    public String getNodeGender() {
+        return nodeGender;
+    }
+
+    public void setNodeGender(String nodeGender) {
+        this.nodeGender = nodeGender;
     }
 
     public String getNodeBirthTime() {

@@ -21,10 +21,6 @@ import com.orange.familyTree.exceptions.MyCypherException;
 import com.orange.familyTree.pojo.specialPojo.LoginVO;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 
 @Service
 @Transactional
@@ -70,14 +66,14 @@ public class UserServiceImpl implements UserService {
 				// 通过电话号码登入
 				UserMySQL userMySQL = userMySQLRepository.findUserByPhoneNumAndPassword(loginVO.getPhoneNum(), loginVO.getPassword());
 				if(userMySQL.getUserId() != null) {
-					UserDO userDetail = UserDO.changeEToDO(userMySQL);
+					UserDO userDetail = UserMySQL.changeToDO(userMySQL);
 					return userDetail;
 				}
 				throw new MySQLException();
 			}
 			else {
 				UserMySQL userMySQL = userMySQLRepository.findUserByEmailAndPassword(loginVO.getEmail(), loginVO.getPassword());
-				UserDO userDetail = UserDO.changeEToDO(userMySQL);
+				UserDO userDetail = UserMySQL.changeToDO(userMySQL);
 				return userDetail;
 			}
 		}
@@ -93,7 +89,7 @@ public class UserServiceImpl implements UserService {
 	public UserDO getUserById(Long userId) throws MySQLException {
 		try {
 			UserMySQL userMySQL = userMySQLRepository.findUserById(userId);
-			UserDO userDO = UserDO.changeEToDO(userMySQL);
+			UserDO userDO = UserMySQL.changeToDO(userMySQL);
 			return userDO;
 		}
 		catch(Exception ex) {
@@ -107,12 +103,24 @@ public class UserServiceImpl implements UserService {
 	public UserDO getUserByNickname(String userNickname) throws MySQLException {
 		try {
 			UserMySQL userMySQL = userMySQLRepository.findUserByNickName(userNickname);
-			UserDO userDO = UserDO.changeEToDO(userMySQL);
+			UserDO userDO = UserMySQL.changeToDO(userMySQL);
 			return userDO;
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
 			throw new MySQLException("账号查询异常。");
+		}
+	}
+
+	// 查询用户头像文件名
+	@Override
+	public String getUserAvatarFileName(String userNickname) throws MySQLException {
+		try{
+			return userMySQLRepository.findUserAvatar(userNickname);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MySQLException("查询用户头像文件名异常。");
 		}
 	}
 
@@ -143,6 +151,33 @@ public class UserServiceImpl implements UserService {
 		catch(Exception ex) {
 			ex.printStackTrace();
 			throw new MySQLException("更改密码异常。");
+		}
+	}
+
+	// 修改用户头像文件名称
+	@Override
+	public void changeUserAvatarFileName(String userNickname, String newUserAvatarFileName) throws MySQLException {
+		try{
+			userMySQLRepository.changeUserAvatar(userNickname, newUserAvatarFileName);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MySQLException("修改用户头像文件名称");
+		}
+	}
+
+	// 修改用户昵称和个人简介
+	@Override
+	public void changeUserNicknameAndIntroduction(String userNickname, String newUserNickname, String newUserIntroduction) throws MySQLException {
+		try{
+			Long userId = userMySQLRepository.findUserIdByNickname(userNickname);
+			if(userId != null) {
+				userMySQLRepository.changeUserNicknameAndIntroduction(userNickname, newUserNickname, newUserIntroduction);
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MySQLException("修改用户昵称和个人简介异常。");
 		}
 	}
 
@@ -199,6 +234,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	// 获得管理图谱的关注申请数量
 	@Override
 	public Integer getAdminGenealogyFocusApplicationNum(Long userId) throws MySQLException {
 		try {

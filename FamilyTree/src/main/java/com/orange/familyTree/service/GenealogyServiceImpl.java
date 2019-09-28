@@ -63,7 +63,7 @@ public class GenealogyServiceImpl implements GenealogyService {
 		}
 	}
 
-	// 查询目标族谱的所有关注者id
+	// 查询目标族谱的所有关注者名称
 	@Override
 	public List<String> findGenealogyFollowersName(String genealogyName) throws MyCypherException {
 		try {
@@ -76,6 +76,20 @@ public class GenealogyServiceImpl implements GenealogyService {
 		}
 	}
 
+	// 查询目标族谱的所有普通关注者昵称
+	@Override
+	public List<String> findGenealogyOrdinaryFollowers(String genealogyName) throws MyCypherException {
+		try {
+			List<Long> followersIdList = genealogyNeo4jRepository.findGenealogyOrdinaryFollowers(genealogyName);
+			List<String> followersNicknameList = userMySQLRepository.findUsersNicknameByIds(followersIdList);
+			return followersNicknameList;
+		}
+		catch(Exception ex) {
+			throw new MyCypherException("查询目标族谱的所有普通关注者昵称异常。");
+		}
+	}
+
+	// 检查图谱名称是否存在
 	@Override
 	public Boolean findWhetherHaveGenealogyName(String genealogyName) throws MySQLException {
 		try {
@@ -305,7 +319,13 @@ public class GenealogyServiceImpl implements GenealogyService {
 			String admins = genealogyMySQLRepository.findGenealogyAdminByName(genealogyName);
 			String[] adminsList = admins.split(" ");
 			int adminsListLength = adminsList.length;
-			if(adminsListLength <= 3 && adminsListLength >= 0) {
+			if(adminsListLength <= 2 && adminsListLength >= 0) {
+				// 验证该管理是否存在
+				for (int i = 0; i < adminsListLength; i++) {
+					if(adminsList[i].equals(genealogyName)) {
+						return false;
+					}
+				}
 				Long userId = userMySQLRepository.findUserIdByNickname(newAdminNickname);
 				Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
 				genealogyNeo4jRepository.setNewAdmin(genealogyId, userId);
@@ -326,17 +346,24 @@ public class GenealogyServiceImpl implements GenealogyService {
 
 	// 转让管理员
 	@Override
-	public void transferAdmin(String genealogyName, String oldAdminNickname, String newAdminNickname) throws MySQLException {
+	public Boolean transferAdmin(String genealogyName, String oldAdminNickname, String newAdminNickname) throws MySQLException {
 		// 转交管理身份
 		try {
-			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
-			Long oldAdminId = userMySQLRepository.findUserIdByNickname(oldAdminNickname);
-			Long newAdminId = userMySQLRepository.findUserIdByNickname(newAdminNickname);
-			genealogyNeo4jRepository.transferAdmin(genealogyId, oldAdminId, newAdminId);
-			// 更新MySQL中的信息
+			// 验证该管理是否存在
 			String oldGenealogyAdmin = genealogyMySQLRepository.findGenealogyAdminByName(genealogyName);
 			String[] adminsList = oldGenealogyAdmin.split(" ");
 			int adminsListLength = adminsList.length;
+			for (int i = 0; i < adminsListLength; i++) {
+				if(adminsList[i].equals(newAdminNickname)) {
+					return false;
+				}
+			}
+			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
+			Long oldAdminId = userMySQLRepository.findUserIdByNickname(oldAdminNickname);
+			Long newAdminId = userMySQLRepository.findUserIdByNickname(newAdminNickname);
+			// 更新Neo4j中数据
+			genealogyNeo4jRepository.transferAdmin(genealogyId, oldAdminId, newAdminId);
+			// 更新MySQL中的信息
 			StringBuilder newGenealogyAdmin = new StringBuilder();
 			for(int i = 0; i < adminsListLength; i++) {
 				// 替换原管理员姓名
@@ -352,6 +379,7 @@ public class GenealogyServiceImpl implements GenealogyService {
 			}
 			String finalGenealogyAdmin = newGenealogyAdmin.toString();
 			genealogyMySQLRepository.changeGenealogyAdmin(genealogyId, finalGenealogyAdmin);
+			return true;
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -434,7 +462,7 @@ public class GenealogyServiceImpl implements GenealogyService {
 			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(newGenealogyName);
 			genealogyNeo4jRepository.createGenealogy(newGenealogyName, genealogyId, userId);
 			// 创建默认中心节点
-			personNeo4jRepository.createPerson(newGenealogyName, person.getName(), person.getDeathTime(),
+			personNeo4jRepository.createPerson(newGenealogyName, person.getName(), person.getGender(), person.getDeathTime(),
 					person.getBirthTime(), person.getMajorAchievements());
 			// 更新动态
 			Timestamp time = UpdateRecordUtil.getNowTimestamp();

@@ -8,13 +8,14 @@ public class UserDO {
     public UserDO() {}
 
     public UserDO(Long userId, String userNickname, Integer userPhoneNum, String userEmail, String userPassword,
-                String userIntroduction, String userRegisterTime, Integer userRoleNum) {
+                  String userIntroduction, String userAvatar, String userRegisterTime, Integer userRoleNum) {
         this.userId = userId;
         this.userNickname = userNickname;
         this.userPhoneNum = userPhoneNum;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
         this.userIntroduction = userIntroduction;
+        this.userAvatar = userAvatar;
         this.userRegisterTime = userRegisterTime;
         this.userRoleNum = userRoleNum;
     }
@@ -29,27 +30,13 @@ public class UserDO {
 
     private String userPassword;
 
-    private String userRegisterTime;
-
     private String userIntroduction;
 
+    private String userAvatar;
+
+    private String userRegisterTime;
+
     private Integer userRoleNum;
-
-    public static UserDO changeEToDO(UserMySQL userMySQL) {
-
-        Long userId = userMySQL.getUserId();
-        String userNickname = userMySQL.getUserNickname();
-        Integer userPhoneNum = userMySQL.getUserPhoneNum();
-        String userEmail = userMySQL.getUserEmail();
-        String userPassword = userMySQL.getUserPassword();
-        String userIntroduction = userMySQL.getUserIntroduction();
-        String userRegisterTime = userMySQL.getUserRegisterTime();
-        Integer userRoleNum = userMySQL.getUserRole();
-        UserDO userDO = new UserDO(userId, userNickname, userPhoneNum, userEmail, userPassword, userIntroduction,
-                userRegisterTime, userRoleNum);
-        return userDO;
-
-    }
 
     public static UserVO changeToVo(UserDO userDO) {
 
@@ -64,13 +51,17 @@ public class UserDO {
     }
 
     public static UserShowVO changeToShow(UserDO userDO) {
-
-        String nickname = userDO.userNickname;
-        String introduction = userDO.userIntroduction;
-        String registrationTime = userDO.userRegisterTime;
-        UserShowVO userShow = new UserShowVO(nickname, introduction, registrationTime);
-        return userShow;
-
+        if(userDO != null) {
+            String nickname = userDO.userNickname;
+            String introduction = userDO.userIntroduction;
+            String avatar = userDO.userAvatar;
+            String registrationTime = userDO.userRegisterTime;
+            UserShowVO userShow = new UserShowVO(nickname, introduction, avatar, registrationTime);
+            return userShow;
+        }
+        else {
+            return null;
+        }
     }
 
     public Long getUserId() {
@@ -105,22 +96,6 @@ public class UserDO {
         this.userEmail = userEmail;
     }
 
-    public String getUserRegisterTime() {
-        return userRegisterTime;
-    }
-
-    public void setUserRegisterTime(String userRegisterTime) {
-        this.userRegisterTime = userRegisterTime;
-    }
-
-    public Integer getUserRoleNum() {
-        return userRoleNum;
-    }
-
-    public void setUserRoleNum(Integer userRoleNum) {
-        this.userRoleNum = userRoleNum;
-    }
-
     public String getUserPassword() {
         return userPassword;
     }
@@ -135,5 +110,29 @@ public class UserDO {
 
     public void setUserIntroduction(String userIntroduction) {
         this.userIntroduction = userIntroduction;
+    }
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar;
+    }
+
+    public String getUserRegisterTime() {
+        return userRegisterTime;
+    }
+
+    public void setUserRegisterTime(String userRegisterTime) {
+        this.userRegisterTime = userRegisterTime;
+    }
+
+    public Integer getUserRoleNum() {
+        return userRoleNum;
+    }
+
+    public void setUserRoleNum(Integer userRoleNum) {
+        this.userRoleNum = userRoleNum;
     }
 }

@@ -34,8 +34,7 @@ public class UserVerificationAspect {
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 		HttpSession session = request.getSession(false);
 		if (session == null) {
-			String message = "身份令牌失效，请重新登陆以获取新的令牌。";
-			return ResultFactory.buildAuthenticationResult(message);
+			return ResultFactory.buildAuthenticationResult("身份令牌失效，请重新登陆以获取新的令牌。");
 		}
 		return jp.proceed();
 	}
