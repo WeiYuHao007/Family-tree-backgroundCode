@@ -38,6 +38,10 @@ public interface UserMySQLRepository {
     // 查询用户头像文件名称（MySQL）
     String findUserAvatar(@Param("nickname") String userNickname);
 
+    // 通过昵称、电话和邮箱查询用户
+    UserMySQL checkUserInfoDuplicated(@Param("nickname") String userNickname, @Param("phoneNum") Integer userPhoneNum,
+                                      @Param("email") String userEmail);
+
     // 销毁用户（MySQL）
     void destroyUserById(@Param("id") Long userId);
 

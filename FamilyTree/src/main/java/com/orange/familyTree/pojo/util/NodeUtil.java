@@ -41,4 +41,18 @@ public class NodeUtil {
 		}
 		return nodes;
 	}
+
+	public static ArrayList<NodeShowVO> addHashNodes(List<String> nodesNameList, Double startX, Double startY,
+													 Double maxX, Double maxY) {
+		ArrayList<NodeShowVO> nodes = new ArrayList<>();
+		Double length = maxX - startX;
+		Double width = maxY - startY;
+		for(int n = 0; n < nodesNameList.size(); n++) {
+			Integer x = new Integer((int)(startX + length * Math.random()));
+			Integer y = new Integer((int)(startY + width * Math.random()));
+			NodeShowVO node = new NodeShowVO(nodesNameList.get(n), x, y);
+			nodes.add(node);
+		}
+		return nodes;
+	}
 }

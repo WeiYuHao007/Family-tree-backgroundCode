@@ -12,9 +12,9 @@ import java.util.ArrayList;
 
 public interface UserService {
 
-	// 查询用户名称是否存在
-	Boolean findWhetherHaveUserNickname(String userNickname) throws MySQLException;
-	
+	// 查询用户昵称、电话号码、邮箱是否存在
+	Boolean CheckUserInfoDuplicated(RegisterVO register) throws MySQLException;
+
 	// 通过登录实体读取账号信息
 	UserDO getUser(LoginVO loginVO) throws MyCypherException;
 

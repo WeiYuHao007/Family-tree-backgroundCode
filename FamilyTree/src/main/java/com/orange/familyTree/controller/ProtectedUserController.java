@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.orange.familyTree.dao.mysql.GenealogyMySQLRepository;
+import com.orange.familyTree.config.MyWebMvcConfig;
 import com.orange.familyTree.exceptions.MySQLException;
 import com.orange.familyTree.exceptions.UserException;
 import com.orange.familyTree.pojo.GenealogyFocusApplicationVO;
@@ -14,7 +14,6 @@ import com.orange.familyTree.pojo.UserDO;
 import com.orange.familyTree.pojo.UserVO;
 import com.orange.familyTree.pojo.specialPojo.ApplicationVO;
 import com.orange.familyTree.pojo.specialPojo.NewUserNicknameAndIntroduction;
-import com.orange.familyTree.pojo.specialPojo.UserShowVO;
 
 import com.orange.familyTree.pojo.util.FileUtil;
 import com.orange.familyTree.service.GenealogyService;
@@ -36,7 +35,10 @@ import java.util.List;
 public class ProtectedUserController {
 
 	// 权限条件：处于登录状态
-	
+
+	@Autowired
+	private MyWebMvcConfig myWebMvcConfig;
+
 	@Autowired
 	private UserService userService;
 
@@ -179,28 +181,27 @@ public class ProtectedUserController {
 			HttpSession session = request.getSession(false);
 			String userNickname = (String) session.getAttribute("SESSION_NICKNAME");
 			String userAvatarFileName = userService.getUserAvatarFileName(userNickname);
+			String uploadFolder = myWebMvcConfig.getUploadFolder();
 			if(userAvatarFileName != null) {
 				// 该用户曾经提交过头像
-				File avatarFile = new File("D:\\programming_space\\Java\\Workspacejava\\Family-tree-backgroundCode\\devImage",
-						userAvatarFileName);
-				if(avatarFile.exists()) {
-					// 文件还存在
-					avatar.transferTo(avatarFile);
-					return ResultFactory.buildSuccessResult("上传成功。");
+				File avatarFile = new File(uploadFolder, userAvatarFileName);
+				if(!avatarFile.exists()) {
+					// 有文件名称但是文件不存在了
+					avatarFile.createNewFile();
 				}
-				else {
-					return ResultFactory.buildFailResult("文件因不明原因丢失，请重新上传。");
-				}
+				avatarFile.createNewFile();
+				avatar.transferTo(avatarFile);
+				return ResultFactory.buildSuccessResult("上传成功。");
 			}
 			// 该用户未曾提交过头像
 			String fileName = avatar.getOriginalFilename();
 			String fileType = fileName.substring(fileName.lastIndexOf("."));
 			Long userId = (Long) session.getAttribute("SESSION_USERID");
-			File newAvatarFile = new File("D:\\programming_space\\Java\\Workspacejava\\Family-tree-backgroundCode\\devImage",
-					FileUtil.getUUID()+ userId + fileType);
+			File newAvatarFile = new File(uploadFolder, FileUtil.getUUID()+ userId + fileType);
 			if(!newAvatarFile.exists()) {
 				newAvatarFile.createNewFile();
 			}
+			userService.changeUserAvatarFileName(userNickname, newAvatarFile.getName());
 			avatar.transferTo(newAvatarFile);
 			return ResultFactory.buildSuccessResult("上传成功。");
 		}

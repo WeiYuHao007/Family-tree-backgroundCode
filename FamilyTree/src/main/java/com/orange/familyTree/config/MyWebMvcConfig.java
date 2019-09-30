@@ -12,13 +12,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @PropertySource(value = "classpath:application.properties")
-public class MyWebMvcConfig extends WebMvcConfigurationSupport {
+public class MyWebMvcConfig implements WebMvcConfigurer {
 
-    @Value("${file.staticAccessPath}")
+    @Value("${file.avatar.staticAccessPath}")
     private String staticAccessPath;
 
     @Value("${file.avatar.uploadFolder}")
     private String uploadFolder;
+
+    @Value("${file.avatar.loadFolder}")
+    private String loadFolder;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -31,8 +34,7 @@ public class MyWebMvcConfig extends WebMvcConfigurationSupport {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(staticAccessPath).addResourceLocations(uploadFolder);
-        super.addResourceHandlers(registry);
+        registry.addResourceHandler(staticAccessPath).addResourceLocations(loadFolder);
     }
 
     public String getUploadFolder() {
@@ -41,5 +43,21 @@ public class MyWebMvcConfig extends WebMvcConfigurationSupport {
 
     public void setUploadFolder(String uploadFolder) {
         this.uploadFolder = uploadFolder;
+    }
+
+    public String getStaticAccessPath() {
+        return staticAccessPath;
+    }
+
+    public void setStaticAccessPath(String staticAccessPath) {
+        this.staticAccessPath = staticAccessPath;
+    }
+
+    public String getLoadFolder() {
+        return loadFolder;
+    }
+
+    public void setLoadFolder(String loadFolder) {
+        this.loadFolder = loadFolder;
     }
 }

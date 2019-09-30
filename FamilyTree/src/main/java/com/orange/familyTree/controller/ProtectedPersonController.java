@@ -1,6 +1,7 @@
 package com.orange.familyTree.controller;
 
 import com.orange.familyTree.entity.neo4j.Person;
+import com.orange.familyTree.exceptions.MySQLException;
 import com.orange.familyTree.pojo.PersonVO;
 import com.orange.familyTree.pojo.util.ResultFactory;
 import com.orange.familyTree.service.GenealogyService;
@@ -46,22 +47,30 @@ public class ProtectedPersonController {
 		return personService.getShortPath(genealogyName, startPersonName, endPersonName, radius);
 	}
 
-	// 获得图谱主要节点关系数据
-	@GetMapping(value = "/tree/{tree-name}/tree-main-data")
-	public Result getGenealogyMainData(
-			@PathVariable("tree-name") String genealogyName, @RequestParam("radius") Integer radius){
+	// 获得图谱散列节点和关系数据
+	@GetMapping(value = "/tree/{tree-name}/hash-node-relationship-data")
+	public Result getGenealogyHashPersonData(
+			@PathVariable("tree-name") String genealogyName, @RequestParam("groupNum") Integer groupNum){
 		try {
-			String centerPersonName = genealogyService.getGenealogyDefaultCenterPerson(genealogyName);
-			if(centerPersonName != null) {
-				return personService.getMainPersonData(genealogyName, centerPersonName, radius);
-			}
-			else {
-				return ResultFactory.buildFailResult("查询图谱默认中心节点出现异常。");
-			}
+			return personService.getHashMainPersonData(genealogyName, groupNum);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
 			return null;
+		}
+	}
+
+	// 获得图谱拓展圆式节点和关系数据
+	@GetMapping(value = "/tree/{tree-name}/circle-node-relationship-data")
+	public Result getGenealogyCirclePersonData(
+			@PathVariable("tree-name") String genealogyName, @RequestParam("centerNode") String centerPerson,
+			@RequestParam("radius") Integer radius) throws MySQLException {
+		try {
+				return personService.getCircleMainPersonData(genealogyName, centerPerson, radius);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MySQLException("获取指定节点信息异常。");
 		}
 	}
 

@@ -8,12 +8,18 @@ import com.orange.familyTree.pojo.util.Result;
 
 public interface PersonService {
 
-	// 查询主要图谱数据
-	Result getMainPersonData(String genealogyName, String centerPersonName, Integer radius) throws MyCypherException;
-	
+	// 查询圆形展开的主要节点数据
+	Result getCircleMainPersonData(String genealogyName, String centerPersonName, Integer radius) throws MyCypherException;
+
+	// 查询散列的主要节点数据
+	Result getHashMainPersonData(String genealogyName, Integer groupNum);
+
 	// 查询节点
 	Person getPerson(String genealogyName, String personName);
-	
+
+	// 查询节点是否存在
+	Boolean findPersonWhetherExist(String genealogyName, String personName);
+
 	// 查询两个指定节点间的最短路径
 	Result getShortPath(String genealogyName, String startPersonName, String endPersonName, 
 			Integer radius);

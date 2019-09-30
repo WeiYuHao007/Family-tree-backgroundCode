@@ -51,6 +51,11 @@
         FROM user
         WHERE userNickname = #{nickname}
     </select>
+    <select id="checkUserInfoDuplicated" resultType="userMySQL">
+        SELECT *
+        FROM user
+        WHERE userNickname = #{nickname} AND userPhoneNum = #{phoneNum} AND userEmaiil = #{email}
+    </select>
     <select id="changePassword">
         UPDATE user
         SET userPassword = #{newPassword}
@@ -59,7 +64,7 @@
     <select id="changeUserAvatar">
         UPDATE user
         SET userAvatar = #{avatar}
-        WHERE userNickname = #{nickname} AND userAvatar = #{avatar};
+        WHERE userNickname = #{nickname};
     </select>
     <select id="changeUserNicknameAndIntroduction">
         UPDATE user

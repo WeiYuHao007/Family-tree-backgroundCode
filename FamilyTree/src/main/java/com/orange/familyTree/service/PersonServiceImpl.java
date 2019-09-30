@@ -57,7 +57,26 @@ public class PersonServiceImpl implements PersonService{
 	}
 
 	@Override
-	public Result getMainPersonData(String genealogyName, String centerNodeName, Integer radius) throws MyCypherException{
+	public Boolean findPersonWhetherExist(String genealogyName, String personName) {
+		try {
+			String name = personNeo4jRepository.findPersonWhetherExist(genealogyName, personName);
+			System.out.println(name);
+			if(name != null) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MyCypherException("节点存在性查询异常。");
+		}
+	}
+
+	// 查询主要图谱数据
+	@Override
+	public Result getCircleMainPersonData(String genealogyName, String centerNodeName, Integer radius) throws MyCypherException{
 		try{
 			String startPersonName = personNeo4jRepository.findForefathers(genealogyName, centerNodeName);
 			if(startPersonName == null) {
@@ -156,6 +175,51 @@ public class PersonServiceImpl implements PersonService{
 		catch(Exception ex) {
 			ex.printStackTrace();
 			throw new MyCypherException("获取图谱主要显示数据失败");
+		}
+	}
+
+	@Override
+	public Result getHashMainPersonData(String genealogyName, Integer groupNum) {
+		try{
+			// 获取信息
+			Long genealogyId = genealogyMySQLRepository.findGenealogyIdByName(genealogyName);
+			// 限制每次10个节点
+			List<String> personNameList = personNeo4jRepository.findPersonByGroup(genealogyId, groupNum * 10);
+			// 开始的index
+			Integer startIndex = 10 * (groupNum - 1);
+			// 包装节点
+			ArrayList<NodeShowVO> nodeShowVOs = NodeUtil.addHashNodes(personNameList, 0.0, 0.0,
+					800.0 * 25, 500.0 * 25);
+			// 关系列表
+			ArrayList<RelationshipVO> relationshipVOs = new ArrayList<>();
+			int nodeShowVOsLength = nodeShowVOs.size();
+			if(nodeShowVOsLength - 1 < startIndex) {
+				return ResultFactory.buildFailResult("已经加载完全。");
+			}
+			for(int i = 0; i < nodeShowVOsLength; i++) {
+				for (int j = startIndex; j < nodeShowVOsLength && i != j; j++) {
+					String positiveRelationshipName = personNeo4jRepository.findRelationship(genealogyName,
+							nodeShowVOs.get(i).getName(), nodeShowVOs.get(j).getName());
+					if(positiveRelationshipName != null) {
+						RelationshipVO positiveRelationshipVO = new RelationshipVO(nodeShowVOs.get(i).getName(),
+								nodeShowVOs.get(j).getName(), positiveRelationshipName);
+						relationshipVOs.add(positiveRelationshipVO);
+					}
+					String reverseRelationshipName = personNeo4jRepository.findRelationship(genealogyName,
+							nodeShowVOs.get(j).getName(), nodeShowVOs.get(i).getName());
+					if(reverseRelationshipName != null) {
+						RelationshipVO reverseRelationshipVO = new RelationshipVO(nodeShowVOs.get(j).getName(),
+								nodeShowVOs.get(i).getName(), reverseRelationshipName);
+						relationshipVOs.add(reverseRelationshipVO);
+					}
+				}
+			}
+			Object[] data = new Object[] {nodeShowVOs.subList(startIndex, personNameList.size()), relationshipVOs};
+			return ResultFactory.buildSuccessResult(data);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			throw new MyCypherException("获取主要人物数据异常。");
 		}
 	}
 

@@ -17,6 +17,7 @@ import com.orange.familyTree.entity.neo4j.Person;
 import com.orange.familyTree.exceptions.MySQLException;
 import com.orange.familyTree.pojo.GenealogyFocusApplicationVO;
 import com.orange.familyTree.pojo.PersonVO;
+import com.orange.familyTree.pojo.util.ResultFactory;
 import com.orange.familyTree.pojo.util.UpdateRecordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -228,6 +229,9 @@ public class GenealogyServiceImpl implements GenealogyService {
 			ArrayList<GenealogyFocusApplication> focusApplicationsList =
 					genealogyFocusApplicationMySQLRepository.findApplicationByGenealogyId(genealogyId);
 			int focusApplicationsListLength = focusApplicationsList.size();
+			if(focusApplicationsList.isEmpty() || focusApplicationsListLength == 0) {
+				return new ArrayList<GenealogyFocusApplicationVO>();
+			}
 			ArrayList<GenealogyFocusApplicationVO> focusApplicationVOsList = new ArrayList<>();
 			for(int i = 0; i < focusApplicationsListLength; i++) {
 				GenealogyFocusApplication focusApplication = focusApplicationsList.get(i);

@@ -12,12 +12,27 @@ import com.orange.familyTree.entity.neo4j.Person;
 @Repository
 public interface PersonNeo4jRepository extends Neo4jRepository<Person, Long>{
 
-	// 查询指定节点的信息
+	// 查询指定节点的信息（Neo4j）
 	@Query("MATCH (g:Genealogy)-[:OWNS]->(p:Person)" +
 			"WHERE g.name = {genealogyName} AND p.name = {personName}" +
 			"RETURN p")
 	Person findPersonByName(@Param("genealogyName") String genealogyName,
 							@Param("personName") String personName);
+
+	// 查询指定节点是否存在（Neo4j）
+	@Query("MATCH (g:Genealogy)-[:OWNS]->(p:Person)" +
+			"WHERE g.name = {genealogyName} AND p.name = {personName}" +
+			"RETURN p.name")
+	String findPersonWhetherExist(@Param("genealogyName") String genealogyName,
+								  @Param("personName") String personName);
+
+	// 查询指定图谱下的节点（无限制）（Neo4j）
+	@Query("MATCH (p:Person)<-[:OWNS]-(g:Genealogy) \n" +
+			"WHERE g.genealogyId = {id} \n" +
+			"RETURN p.name \n" +
+			"ORDER BY id (p) \n" +
+			"LIMIT {num}")
+	List<String> findPersonByGroup(@Param("id") Long genealogyId, @Param("num") Integer personNum);
 
 	// 查询指定节点的第三代祖宗（null即递减）（Neo4j）
 	@Query("MATCH (g:Genealogy)-[:OWNS]->(p1:Person)\n" +

@@ -13,6 +13,7 @@ import com.orange.familyTree.pojo.specialPojo.RegisterVO;
 import com.orange.familyTree.pojo.specialPojo.UserShowVO;
 import com.orange.familyTree.pojo.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.orange.familyTree.pojo.util.Result;
@@ -31,6 +32,7 @@ public class PublicUserController {
 	@PostMapping(value="/user/status")
 	public Result signIn(HttpServletRequest request, HttpServletResponse response, 
 			@RequestBody LoginVO loginVO) {
+		loginVO.setPassword(DigestUtils.md5DigestAsHex(loginVO.getPassword().getBytes()));
 		UserDO userDO = userService.getUser(loginVO);
 		//设置为登录状态
 		HttpSession session = request.getSession(true);
@@ -41,6 +43,7 @@ public class PublicUserController {
 		//会话存在时间为一小时
 		session.setMaxInactiveInterval(3600);
 		//将数据库映射对象转化为视图映射对象返回
+
 		Result result = ResultFactory.buildSuccessResult("登陆成功。", userDO.getUserNickname());
 		return result;
 	}
@@ -48,13 +51,17 @@ public class PublicUserController {
 	// 账户注册
 	@PostMapping(value = "/user")
 	public Result register(@RequestBody RegisterVO register) throws MySQLException {
+		if (register.getNickname().isEmpty()){
+			return ResultFactory.buildFailResult("请输入昵称。");
+		}
 		// 验证用户昵称是否存在
-		if(!userService.findWhetherHaveUserNickname(register.getNickname())) {
+		if(!userService.CheckUserInfoDuplicated(register)) {
+			register.setPassword(DigestUtils.md5DigestAsHex(register.getPassword().getBytes()));
 			userService.registerUser(register);
 			return ResultFactory.buildSuccessResult("注册成功。");
 		}
 		else {
-			return ResultFactory.buildFailResult("用户昵称已存在，请重新输入。");
+			return ResultFactory.buildFailResult("用户信息存在重复，请重新输入。");
 		}
 	}
 

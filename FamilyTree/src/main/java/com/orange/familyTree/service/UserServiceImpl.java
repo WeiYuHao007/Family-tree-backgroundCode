@@ -42,10 +42,11 @@ public class UserServiceImpl implements UserService {
 	private GenealogyMySQLRepository genealogyMySQLRepository;
 
 	@Override
-	public Boolean findWhetherHaveUserNickname(String userNickname) throws MySQLException {
+	public Boolean CheckUserInfoDuplicated(RegisterVO register) throws MySQLException {
 		try {
-			Long userId = userMySQLRepository.findUserIdByNickname(userNickname);
-			if(userId != null) {
+			UserMySQL user = userMySQLRepository.checkUserInfoDuplicated(register.getNickname(),
+					register.getPhoneNum(), register.getEmail());
+			if(user != null) {
 				return true;
 			}
 			else {
@@ -162,7 +163,7 @@ public class UserServiceImpl implements UserService {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			throw new MySQLException("修改用户头像文件名称");
+			throw new MySQLException("修改用户头像文件名称异常。");
 		}
 	}
 

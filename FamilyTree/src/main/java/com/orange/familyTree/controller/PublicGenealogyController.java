@@ -37,6 +37,12 @@ public class PublicGenealogyController {
 	// 创建图谱
 	@PostMapping(value = "/tree")
 	public Result createGenealogy(HttpServletRequest request, @RequestBody NewGenealogyVO newGenealogyVO) throws MySQLException {
+		if (newGenealogyVO.getNewGenealogyName().isEmpty()){
+			return ResultFactory.buildFailResult("请输入图谱名称。");
+		}
+		if (newGenealogyVO.getDefaultCenterNodeName().isEmpty()){
+			return ResultFactory.buildFailResult("请输入人物名称。");
+		}
 		// 验证新图谱名称是否存在
 		if(!genealogyService.findWhetherHaveGenealogyName(newGenealogyVO.getNewGenealogyName())) {
 			HttpSession session = request.getSession(false);
